@@ -66,4 +66,32 @@ class OrderController extends Controller
         $order = Order::where('user_id', auth()->id())->with('items.product')->findOrFail($id);
         return response()->json($order);
     }
+
+  
+
+    // داخل OrderController.php
+public function allOrdersForAdmin()
+{
+    $user = auth()->user();
+
+    if ($user->role !== 'admin') {
+        return response()->json(['error' => 'Unauthorized'], 403);
+    }
+
+    $orders = Order::with(['items.product', 'user'])->get();
+
+    return response()->json([
+        'message' => 'Orders fetched successfully',
+        'orders' => $orders
+    ], 200);
+}
+
+
+
+
+
+
+
+
+
 }

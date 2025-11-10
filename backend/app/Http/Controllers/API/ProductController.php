@@ -109,4 +109,18 @@ class ProductController extends Controller
         $product->delete();
         return response()->json(null, 204);
     }
+
+public function search(Request $request)
+{
+    $query = $request->query('q'); // البحث عن طريق ?q=الكلمة
+
+    $products = \App\Models\Product::where('name', 'LIKE', "%{$query}%")
+        ->orWhere('description', 'LIKE', "%{$query}%")
+        ->with('category') // إذا أردت عرض الفئة
+        ->get();
+
+    return response()->json($products);
+}
+
+
 }
