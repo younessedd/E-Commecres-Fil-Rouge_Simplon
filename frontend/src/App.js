@@ -1,86 +1,125 @@
-// REACT & COMPONENT IMPORTS - Core dependencies and component modules
+// =====================================================
+// I SMELL SHOP - MINI E-COMMERCE FRONTEND (React)
+// Main Application Controller - App.js
+// Handles authentication, routing, notifications,
+// admin dashboard, and user shopping workflow.
+// =====================================================
+
 import React, { useState, useEffect } from 'react';
+
+// Layout Components
 import Navbar from './components/Layout/Navbar';
 import Footer from './components/Layout/Footer';
+
+// Authentication Components
 import Login from './components/Shared/Login';
 import Register from './components/Shared/Register';
+
+// Public Landing Page
 import HeroPage from './components/Shared/HeroPage';
+
+// Admin Dashboard Pages
 import AdminHome from './components/AdminDashboard/AdminHome';
 import ProductsManagement from './components/AdminDashboard/ProductsManagement';
 import UsersManagement from './components/AdminDashboard/UsersManagement';
 import OrdersManagement from './components/AdminDashboard/OrdersManagement';
 import CategoriesManagement from './components/AdminDashboard/CategoriesManagement';
+
+// User Pages
 import ProductsList from './components/UserDashboard/ProductsList';
 import ShoppingCart from './components/UserDashboard/ShoppingCart';
 import UserOrders from './components/UserDashboard/UserOrders';
 import UserProfile from './components/UserDashboard/UserProfile';
-import { getCurrentUser, isAuthenticated } from './utils/auth';
-import './styles/style.css';
 
-// MAIN APP COMPONENT - Root application container
+// Authentication Utilities
+import { getCurrentUser, isAuthenticated } from './utils/auth';
+
+
+// =====================================================
+// MAIN APP COMPONENT
+// =====================================================
 function App() {
-  // STATE MANAGEMENT - Application-wide state variables
-  const [user, setUser] = useState(null);                    // Current authenticated user data
-  const [currentView, setCurrentView] = useState('home');    // Active view/page identifier
-  const [loading, setLoading] = useState(true);              // Initial loading state
-  const [notification, setNotification] = useState({ 
-    show: false, 
-    message: '', 
-    type: 'success' 
+
+  // -------------------------------
+  // APPLICATION STATE
+  // -------------------------------
+  const [user, setUser] = useState(null);   
+  const [currentView, setCurrentView] = useState('home');
+  const [loading, setLoading] = useState(true);
+  const [notification, setNotification] = useState({
+    show: false,
+    message: '',
+    type: 'success'
   });
 
-  // NOTIFICATION HANDLER - Unified toast message system
+
+  // -------------------------------
+  // NOTIFICATION HANDLER (TOAST)
+  // -------------------------------
   const showNotification = (message, type = 'success') => {
     setNotification({ show: true, message, type });
-    // Auto-hide notification after 4 seconds
+
     setTimeout(() => {
       setNotification({ show: false, message: '', type: 'success' });
     }, 4000);
   };
 
-  // AUTHENTICATION CHECK - Verify user session on app startup
+
+  // -------------------------------
+  // CHECK AUTHENTICATION ON START
+  // -------------------------------
   useEffect(() => {
     const checkAuth = () => {
       if (isAuthenticated()) {
-        const currentUser = getCurrentUser();
-        setUser(currentUser);  // Set user state if authenticated
+        setUser(getCurrentUser());
       }
-      setLoading(false);       // Mark initial loading as complete
+      setLoading(false);
     };
     checkAuth();
-  }, []);  // Empty dependency array ensures this runs only once on mount
+  }, []);
 
-  // LOGIN HANDLER - Process successful user authentication
+
+  // -------------------------------
+  // LOGIN HANDLER
+  // -------------------------------
   const handleLogin = (userData, token) => {
     setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));  // Persist user data
-    localStorage.setItem('token', token);                    // Store authentication token
-    // Redirect based on user role
+
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', token);
+
     const targetView = userData.role === 'admin' ? 'admin' : 'products';
     setCurrentView(targetView);
-    showNotification(`Welcome back, ${userData.name || userData.email}!`, 'success');
+
+    showNotification(`Welcome back, ${userData.name || userData.email}!`);
   };
 
-  // LOGOUT HANDLER - Clear user session and reset state
+
+  // -------------------------------
+  // LOGOUT HANDLER
+  // -------------------------------
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem('user');    // Clear persisted user data
-    localStorage.removeItem('token');   // Remove authentication token
-    setCurrentView('home');             // Redirect to landing page
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    setCurrentView('home');
+
     showNotification('Logged out successfully', 'info');
   };
 
-  // NOTIFICATION COMPONENT - Reusable toast message display
+
+  // -------------------------------
+  // NOTIFICATION UI COMPONENT
+  // -------------------------------
   const Notification = () => {
     if (!notification.show) return null;
 
     return (
       <div className={`notification notification-${notification.type}`}>
         <span className="notification-message">{notification.message}</span>
-        <button 
+        <button
           className="notification-close"
           onClick={() => setNotification({ show: false, message: '', type: 'success' })}
-          aria-label="Close notification"
         >
           ×
         </button>
@@ -88,89 +127,72 @@ function App() {
     );
   };
 
-  // LOADING STATE - Display during initial authentication check
+
+  // -------------------------------
+  // LOADING SCREEN
+  // -------------------------------
   if (loading) {
     return (
       <div className="loading">
-        <div>Loading Application...</div>
+        <div>Loading I Smell Shop...</div>
       </div>
     );
   }
 
-  // CONTENT RENDERER - Main view routing logic based on authentication and role
+
+  // -------------------------------
+  // ROUTER LOGIC (WITHOUT React Router)
+  // -------------------------------
   const renderContent = () => {
-    // UNAUTHENTICATED USER FLOW - Public routes
+
+    // PUBLIC PAGES (NOT LOGGED IN)
     if (!user) {
       switch (currentView) {
         case 'register':
-          return <Register 
-            onSwitchToLogin={() => setCurrentView('login')} 
-            showNotification={showNotification}
-          />;
+          return <Register onSwitchToLogin={() => setCurrentView('login')} showNotification={showNotification} />;
         case 'login':
-          return <Login 
-            onLogin={handleLogin} 
-            onSwitchToRegister={() => setCurrentView('register')}
-            showNotification={showNotification}
-          />;
+          return <Login onLogin={handleLogin} onSwitchToRegister={() => setCurrentView('register')} showNotification={showNotification} />;
         default:
           return <HeroPage onViewChange={setCurrentView} />;
       }
     }
 
-    // ADMIN USER FLOW - Administrative dashboard routes
+    // ADMIN ROUTES
     if (user.role === 'admin') {
       switch (currentView) {
-        case 'admin-products': 
-          return <ProductsManagement showNotification={showNotification} />;
-        case 'admin-users': 
-          return <UsersManagement showNotification={showNotification} />;
-        case 'admin-orders': 
-          return <OrdersManagement showNotification={showNotification} />;
-        case 'admin-categories': 
-          return <CategoriesManagement showNotification={showNotification} />;
-
-              case 'admin-home': 
-          return <AdminHome showNotification={showNotification} />;
-
-
-
-        default: 
-          return <AdminHome currentView={currentView} onViewChange={setCurrentView} showNotification={showNotification} />;
+       // case 'admin-products': return <ProductsManagement showNotification={showNotification} />;
+        case 'admin-users': return <UsersManagement showNotification={showNotification} />;
+        case 'admin-orders': return <OrdersManagement showNotification={showNotification} />;
+        case 'admin-categories': return <CategoriesManagement showNotification={showNotification} />;
+       // case 'admin-home': return <AdminHome showNotification={showNotification} />;
+       // default: return <AdminHome onViewChange={setCurrentView} showNotification={showNotification} />;
+        default: return <ProductsManagement onViewChange={setCurrentView} showNotification={showNotification} />;
       }
+    }
 
-
-
-    } 
-    // CUSTOMER USER FLOW - Shopping and user management routes
-    else {
-      switch (currentView) {
-        case 'products': 
-          return <ProductsList user={user} onViewChange={setCurrentView} showNotification={showNotification} />;
-        case 'cart': 
-          return <ShoppingCart onViewChange={setCurrentView} showNotification={showNotification} />;
-        case 'orders': 
-          return <UserOrders onViewChange={setCurrentView} showNotification={showNotification} />;
-        case 'profile': 
-          return <UserProfile user={user} onViewChange={setCurrentView} showNotification={showNotification} />;
-        default: 
-          return <ProductsList currentView={currentView} onViewChange={setCurrentView} user={user} showNotification={showNotification} />;
-      }
+    // USER ROUTES
+    switch (currentView) {
+      case 'products': return <ProductsList user={user} onViewChange={setCurrentView} showNotification={showNotification} />;
+      case 'cart': return <ShoppingCart onViewChange={setCurrentView} showNotification={showNotification} />;
+      case 'orders': return <UserOrders onViewChange={setCurrentView} showNotification={showNotification} />;
+      case 'profile': return <UserProfile user={user} onViewChange={setCurrentView} showNotification={showNotification} />;
+      default: return <ProductsList user={user} onViewChange={setCurrentView} showNotification={showNotification} />;
     }
   };
 
-  // MAIN APP RENDER - Root component structure
+
+  // -------------------------------
+  // MAIN LAYOUT
+  // -------------------------------
   return (
     <div className="App">
-      <Navbar 
-        user={user} 
-        onLogout={handleLogout} 
-        onViewChange={setCurrentView} 
-      />
+      <Navbar user={user} onLogout={handleLogout} onViewChange={setCurrentView} />
+
       <main className="container">
         <Notification />
         {renderContent()}
       </main>
+
       <Footer />
     </div>
   );

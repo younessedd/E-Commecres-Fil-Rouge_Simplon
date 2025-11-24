@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-//import { ordersAPI } from '../../services/api';
 import { ordersAPI } from '../../services/api/orders.api';
 import './OrdersManagement.css';
 
@@ -24,6 +23,18 @@ const OrdersManagement = ({ showNotification }) => {
   // FORMAT PRICE UTILITY - Display prices in Moroccan Dirham format
   const formatPrice = (price) => {
     return `${parseFloat(price).toFixed(2)} DH`;
+  };
+
+  // FORMAT PHONE NUMBER - Display phone number in readable format
+  const formatPhoneNumber = (phone) => {
+    if (!phone) return 'N/A';
+    // Remove any non-digit characters
+    const cleaned = phone.replace(/\D/g, '');
+    // Format as +212 XXX-XXXXXX
+    if (cleaned.length === 10) {
+      return `+212 ${cleaned.slice(0, 3)}-${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
+    }
+    return phone;
   };
 
   // RESPONSIVE LAYOUT EFFECT - Detect screen size changes
@@ -92,6 +103,7 @@ const OrdersManagement = ({ showNotification }) => {
       order.id.toString().includes(searchQuery) ||
       order.user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       order.user?.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      order.user?.phone?.toLowerCase().includes(searchQuery.toLowerCase()) || // Added phone search
       order.total?.toString().includes(searchQuery)
     );
 
@@ -292,7 +304,21 @@ const OrdersManagement = ({ showNotification }) => {
               <div className="order-info-item">
                 <span className="info-label">Customer</span>
                 <span className="info-value">
-                  {order.user?.name || 'N/A'} ({order.user?.email || 'N/A'})
+                  {order.user?.name || 'N/A'}
+                </span>
+              </div>
+              
+              <div className="order-info-item">
+                <span className="info-label">Email</span>
+                <span className="info-value">
+                  {order.user?.email || 'N/A'}
+                </span>
+              </div>
+
+              <div className="order-info-item">
+                <span className="info-label">Phone</span>
+                <span className="info-value">
+                  {formatPhoneNumber(order.user?.phone)}
                 </span>
               </div>
               
@@ -356,6 +382,7 @@ const OrdersManagement = ({ showNotification }) => {
             <div className="order-customer-info">
               <span className="customer-name">{order.user?.name || 'N/A'}</span>
               <span className="customer-email">{order.user?.email || 'N/A'}</span>
+              <span className="customer-phone">{formatPhoneNumber(order.user?.phone)}</span>
             </div>
             <div className="order-meta-info">
               <span className="order-date">{order.created_at ? new Date(order.created_at).toLocaleString('en-US') : 'N/A'}</span>
@@ -442,7 +469,7 @@ const OrdersManagement = ({ showNotification }) => {
           <div className="search-box">
             <input
               type="text"
-              placeholder="Search by order ID, customer name, email, or total..."
+              placeholder="Search by order ID, customer name, email, phone, or total..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -461,7 +488,7 @@ const OrdersManagement = ({ showNotification }) => {
             </div>
           </div>
           <div className="search-tips">
-            Search tips: Enter order ID, customer name, email, or total amount to find specific orders
+            Search tips: Enter order ID, customer name, email, phone, or total amount to find specific orders
           </div>
         </div>
       </div>
@@ -482,7 +509,9 @@ const OrdersManagement = ({ showNotification }) => {
                 Are you sure you want to delete order <strong>#{selectedOrder?.id}</strong>?
               </p>
               <div className="order-details-preview">
-                <p><strong>Customer:</strong> {selectedOrder?.user?.name || 'N/A'} ({selectedOrder?.user?.email || 'N/A'})</p>
+                <p><strong>Customer:</strong> {selectedOrder?.user?.name || 'N/A'}</p>
+                <p><strong>Email:</strong> {selectedOrder?.user?.email || 'N/A'}</p>
+                <p><strong>Phone:</strong> {formatPhoneNumber(selectedOrder?.user?.phone)}</p>
                 <p><strong>Total:</strong> {formatPrice(selectedOrder?.total || 0)}</p>
                 <p><strong>Date:</strong> {selectedOrder?.created_at ? new Date(selectedOrder.created_at).toLocaleString('en-US') : 'N/A'}</p>
               </div>

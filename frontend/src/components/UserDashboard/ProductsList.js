@@ -4,7 +4,8 @@ import ProductItem from './ProductItem';  // Individual product display componen
 //import { productsAPI } from '../../services/api';  // API service for product operations
 import './ProductsList.css';  // Component-specific styles
 import { productsAPI } from '../../services/api/products.api';
-// PRODUCTS LIST COMPONENT - Main product catalog and search interface
+
+// PRODUCTS LIST COMPONENT - Main fragrance catalog and search interface for I Smell Shop
 const ProductsList = ({ user, onViewChange, showNotification }) => {
   // STATE MANAGEMENT - Component state variables
   const [products, setProducts] = useState([]);          // Current displayed products
@@ -24,7 +25,7 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
     }
   }, [user, currentPage]);  // Dependencies: user authentication and current page
 
-  // FETCH PRODUCTS FUNCTION - Retrieve products from API with pagination
+  // FETCH PRODUCTS FUNCTION - Retrieve fragrances from API with pagination
   const fetchProducts = async (page = 1) => {
     try {
       setLoading(true);  // Start loading state
@@ -45,17 +46,17 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
       setProducts([]);        // Reset products on error
       setTotalProducts(0);    // Reset total count
       if (showNotification) {
-        showNotification('Failed to load products', 'error');  // Show error notification
+        showNotification('Failed to load fragrances', 'error');  // Updated error notification
       }
     } finally {
       setLoading(false);  // End loading state regardless of outcome
     }
   };
 
-  // SEARCH HANDLER - Filter products based on search query
+  // SEARCH HANDLER - Filter fragrances based on search query
   const handleSearch = () => {
     if (!searchQuery.trim()) {
-      fetchProducts(1);  // Reset to all products if search is empty
+      fetchProducts(1);  // Reset to all fragrances if search is empty
       return;
     }
 
@@ -63,15 +64,17 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
 
     const searchTerm = searchQuery.toLowerCase().trim();  // Normalize search term
     
-    // FILTER PRODUCTS - Search across multiple product fields
+    // FILTER FRAGRANCES - Search across multiple product fields
     const filteredProducts = allProducts.filter(product => {
-      const matchesName = product.name.toLowerCase().includes(searchTerm);        // Product name match
+      const matchesName = product.name.toLowerCase().includes(searchTerm);        // Fragrance name match
       const matchesCategory = product.category && 
         product.category.name.toLowerCase().includes(searchTerm);                // Category name match
       const matchesDescription = product.description && 
         product.description.toLowerCase().includes(searchTerm);                  // Description match
+      const matchesNotes = product.notes && 
+        product.notes.toLowerCase().includes(searchTerm);                        // Fragrance notes match
       
-      return matchesName || matchesCategory || matchesDescription;  // Return if any field matches
+      return matchesName || matchesCategory || matchesDescription || matchesNotes;  // Return if any field matches
     });
 
     // UPDATE STATE - Set filtered results
@@ -83,10 +86,10 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
     setLoading(false);   // End search loading state
   };
 
-  // CLEAR SEARCH HANDLER - Reset search and show all products
+  // CLEAR SEARCH HANDLER - Reset search and show all fragrances
   const handleClearSearch = () => {
     setSearchQuery('');    // Clear search input
-    fetchProducts(1);      // Fetch first page of all products
+    fetchProducts(1);      // Fetch first page of all fragrances
   };
 
   // KEY PRESS HANDLER - Trigger search on Enter key
@@ -172,7 +175,7 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
           {pages}  {/* Render pagination buttons */}
         </div>
         <div className="pagination-info">
-          Showing {products.length} of {totalProducts} products | Page {currentPage} of {lastPage}
+          Showing {products.length} of {totalProducts} fragrances | Page {currentPage} of {lastPage}  {/* Updated info text */}
         </div>
       </div>
     );
@@ -182,10 +185,10 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
   if (!user) {
     return (
       <div className="hero-container">
-        <h1>Welcome to E-Store</h1>  {/* Welcome title */}
-        <p>Discover amazing products after logging in!</p>  {/* Welcome message */}
+        <h1>Welcome to I Smell Shop</h1>  {/* Updated welcome title */}
+        <p>Discover luxury fragrances after logging in!</p>  {/* Updated welcome message */}
         <button className="btn-primary" onClick={() => onViewChange('login')}>
-          Login to Shop  {/* Login call to action */}
+          Login to Explore Fragrances  {/* Updated login call to action */}
         </button>
       </div>
     );
@@ -196,12 +199,12 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
-        <p className="loading-text">Loading products...</p>  {/* Loading message */}
+        <p className="loading-text">Loading luxury fragrances...</p>  {/* Updated loading message */}
       </div>
     );
   }
 
-  // MAIN COMPONENT RENDER - Product catalog interface
+  // MAIN COMPONENT RENDER - Fragrance catalog interface
   return (
     <div className="products-list-container">
       
@@ -209,18 +212,18 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
       <div className="products-list-header">
         <div className="header-content">
           <div className="header-title">
-            <h1>All Products</h1>  {/* Main page title */}
-            <p className="header-subtitle">Browse our collection of {totalProducts} products</p>  {/* Product count */}
+            <h1>Luxury Fragrances</h1>  {/* Updated main page title */}
+            <p className="header-subtitle">Browse our exclusive collection of {totalProducts} premium perfumes</p>  {/* Updated product count */}
           </div>
         </div>
 
-        {/* SEARCH SECTION - Product search and filtering */}
+        {/* SEARCH SECTION - Fragrance search and filtering */}
         <div className="search-section">
           <div className="search-container">
-            {/* SEARCH INPUT - Text input for product search */}
+            {/* SEARCH INPUT - Text input for fragrance search */}
             <input
               type="text"
-              placeholder="Search by product name, category, or description..."
+              placeholder="Search by fragrance name, scent notes, category, or description..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}  // Update search query
               onKeyPress={handleKeyPress}  // Handle Enter key press
@@ -229,10 +232,10 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
             {/* SEARCH ACTIONS - Buttons for search operations */}
             <div className="search-actions">
               <button className="management-btn btn-primary" onClick={handleSearch}>
-                Search  {/* Execute search */}
+                Search Fragrances  {/* Updated search button */}
               </button>
               <button className="management-btn btn-secondary" onClick={handleClearSearch}>
-                Show All  {/* Clear search and show all products */}
+                Show All Fragrances  {/* Updated clear search button */}
               </button>
             </div>
           </div>
@@ -240,7 +243,8 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
           {/* SEARCH TIPS - Help text for search functionality */}
           <div className="search-tips">
             <strong>Search by:</strong>  {/* Search tips label */}
-            <span>Product Name</span>    {/* Searchable field */}
+            <span>Fragrance Name</span>    {/* Updated searchable field */}
+            <span>Scent Notes</span>       {/* New searchable field */}
             <span>Category</span>        {/* Searchable field */}
             <span>Description</span>     {/* Searchable field */}
           </div>
@@ -248,10 +252,10 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
           {/* SEARCH RESULTS INFO - Display search results information */}
           {searchQuery && (
             <div className="search-results-info">
-              Search Results: <strong>{products.length}</strong> product{products.length !== 1 ? 's' : ''} found for "{searchQuery}"  {/* Results count */}
+              Search Results: <strong>{products.length}</strong> fragrance{products.length !== 1 ? 's' : ''} found for "{searchQuery}"  {/* Updated results count */}
               {products.length === 0 && (
                 <div className="no-results-message">
-                  No products found. Try different search terms.  {/* No results message */}
+                  No fragrances found. Try different search terms or browse our full collection.  {/* Updated no results message */}
                 </div>
               )}
             </div>
@@ -259,19 +263,19 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
         </div>
       </div>
 
-      {/* PRODUCTS COUNT - Display current products count */}
+      {/* PRODUCTS COUNT - Display current fragrances count */}
       <div className="products-count">
-        Showing {products.length} of {totalProducts} products  {/* Products count */}
+        Showing {products.length} of {totalProducts} luxury fragrances  {/* Updated products count */}
         {searchQuery && (
           <span className="search-term"> for "{searchQuery}"</span>  
         )}
       </div>
 
-      {/* PRODUCTS GRID - Main products display area */}
+      {/* PRODUCTS GRID - Main fragrances display area */}
       {products.length > 0 ? (
         <>
           <div className="products-grid">
-            {/* MAP THROUGH PRODUCTS - Render each product item */}
+            {/* MAP THROUGH FRAGRANCES - Render each fragrance item */}
             {products.map(product => (
               <ProductItem 
                 key={product.id}  // Unique product key
@@ -286,22 +290,22 @@ const ProductsList = ({ user, onViewChange, showNotification }) => {
           {renderPagination()}
         </>
       ) : (
-        /* EMPTY STATE - No products available message */
+        /* EMPTY STATE - No fragrances available message */
         <div className="empty-state">
           <h3>
-            {searchQuery ? 'No products found' : 'No products available'}  {/* Context-specific title */}
+            {searchQuery ? 'No fragrances found' : 'No fragrances available'}  {/* Updated context-specific title */}
           </h3>
           <p>
             {searchQuery 
-              ? `No results found for "${searchQuery}". Try different search terms.`  // Search no results
-              : 'There are no products available in the database yet.'  // General no products
+              ? `No results found for "${searchQuery}". Try searching by scent notes, fragrance name, or category.`  // Updated search no results
+              : 'There are no luxury fragrances available in our collection yet.'  // Updated general no products
             }
           </p>
           <button 
             className="btn-primary"
-            onClick={() => fetchProducts(1)}  // Reload products
+            onClick={() => fetchProducts(1)}  // Reload fragrances
           >
-            Reload Products  {/* Reload action */}
+            Reload Fragrances  {/* Updated reload action */}
           </button>
         </div>
       )}

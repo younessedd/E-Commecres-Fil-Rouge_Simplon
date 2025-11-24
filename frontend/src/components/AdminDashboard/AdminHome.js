@@ -5,33 +5,33 @@ import { productsAPI } from '../../services/api/products.api';
 import { categoriesAPI } from '../../services/api/categories.api';
 import './AdminHome.css';
 
-// ADMIN HOME COMPONENT - Dashboard for product overview and management
+// ADMIN HOME COMPONENT - Dashboard for fragrance overview and management for I Smell Shop
 const AdminHome = ({ currentView, onViewChange, showNotification }) => {
   // STATE MANAGEMENT - Application data and UI state
-  const [products, setProducts] = useState([]);                   // Currently displayed products
-  const [allProducts, setAllProducts] = useState([]);             // Complete products dataset for search
-  const [categories, setCategories] = useState([]);               // Product categories list
+  const [products, setProducts] = useState([]);                   // Currently displayed fragrances
+  const [allProducts, setAllProducts] = useState([]);             // Complete fragrances dataset for search
+  const [categories, setCategories] = useState([]);               // Fragrance categories list
   const [loading, setLoading] = useState(true);                   // Initial data loading state
   const [searchQuery, setSearchQuery] = useState('');             // Search filter input
   const [currentPage, setCurrentPage] = useState(1);              // Current pagination page
   const [lastPage, setLastPage] = useState(1);                    // Total number of pages
-  const [totalProducts, setTotalProducts] = useState(0);          // Total products count
+  const [totalProducts, setTotalProducts] = useState(0);          // Total fragrances count
   const [searchLoading, setSearchLoading] = useState(false);      // Search operation loading state
 
-  // INITIAL DATA LOADING - Fetch products and categories on component mount
+  // INITIAL DATA LOADING - Fetch fragrances and categories on component mount
   useEffect(() => {
     fetchAllProductsForSearch();
     fetchCategories();
   }, []);
 
-  // PAGINATION EFFECT - Fetch products when page changes (only when not searching)
+  // PAGINATION EFFECT - Fetch fragrances when page changes (only when not searching)
   useEffect(() => {
     if (!searchQuery) {
       fetchBasicProducts(currentPage);
     }
   }, [currentPage]);
 
-  // FETCH ALL PRODUCTS FOR SEARCH - Preload all products for client-side search
+  // FETCH ALL FRAGRANCES FOR SEARCH - Preload all fragrances for client-side search
   const fetchAllProductsForSearch = async () => {
     try {
       const firstPageResponse = await productsAPI.getAll(1);
@@ -52,14 +52,14 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
       setAllProducts(allProductsData);
       
     } catch (error) {
-      console.error('Error fetching all products for search:', error);
+      console.error('Error fetching all fragrances for search:', error);
       // Fallback: Use first page data only
       const firstPageResponse = await productsAPI.getAll(1);
       setAllProducts(firstPageResponse.data.data || []);
     }
   };
 
-  // FETCH BASIC PRODUCTS - Load paginated products for normal display
+  // FETCH BASIC FRAGRANCES - Load paginated fragrances for normal display
   const fetchBasicProducts = async (page = 1) => {
     try {
       setLoading(true);
@@ -72,29 +72,29 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
       setTotalProducts(response.data.total || 0);
       
     } catch (error) {
-      console.error('Error fetching products:', error);
+      console.error('Error fetching fragrances:', error);
       // Reset state on error
       setProducts([]);
       setLastPage(1);
       setCurrentPage(1);
       setTotalProducts(0);
-      showNotification('Failed to load products', 'error');
+      showNotification('Failed to load luxury fragrances', 'error'); // Updated error message
     } finally {
       setLoading(false);
     }
   };
 
-  // FETCH CATEGORIES - Load product categories for reference
+  // FETCH CATEGORIES - Load fragrance categories for reference
   const fetchCategories = async () => {
     try {
       const response = await categoriesAPI.getAll();
       setCategories(response.data.data || response.data);
     } catch (error) {
-      console.error('Error fetching categories:', error);
+      console.error('Error fetching fragrance categories:', error);
     }
   };
 
-  // SEARCH HANDLER - Client-side product filtering and search
+  // SEARCH HANDLER - Client-side fragrance filtering and search
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
       setCurrentPage(1);
@@ -105,7 +105,7 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
     setSearchLoading(true);
     const searchTerm = searchQuery.toLowerCase().trim();
     
-    // Filter products based on multiple criteria
+    // Filter fragrances based on multiple criteria
     const filteredProducts = allProducts.filter(product => {
       const matchesId = product.id.toString().includes(searchTerm);
       const matchesName = product.name.toLowerCase().includes(searchTerm);
@@ -115,8 +115,10 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
         product.description.toLowerCase().includes(searchTerm);
       const matchesPrice = product.price && 
         product.price.toString().includes(searchTerm);
+      const matchesNotes = product.notes && 
+        product.notes.toLowerCase().includes(searchTerm); // Added fragrance notes search
       
-      return matchesId || matchesName || matchesCategory || matchesDescription || matchesPrice;
+      return matchesId || matchesName || matchesCategory || matchesDescription || matchesPrice || matchesNotes;
     });
 
     // Sort results by relevance
@@ -153,7 +155,7 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
     setSearchLoading(false);
   };
 
-  // PAGINATION HANDLER - Navigate between product pages
+  // PAGINATION HANDLER - Navigate between fragrance pages
   const handlePageChange = (page) => {
     if (searchQuery) return; // Disable pagination during search
     setCurrentPage(page);
@@ -166,7 +168,7 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
       return (
         <div className="pagination-container">
           <div className="pagination-info search-results-info">
-            Search Results: <strong>{products.length}</strong> product{products.length !== 1 ? 's' : ''} found
+            Search Results: <strong>{products.length}</strong> fragrance{products.length !== 1 ? 's' : ''} found {/* Updated text */}
           </div>
         </div>
       );
@@ -262,18 +264,18 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
           {pages}
         </div>
         <div className="pagination-info">
-          Page {currentPage} of {lastPage} • {totalProducts} products total
+          Page {currentPage} of {lastPage} • {totalProducts} luxury fragrances total {/* Updated text */}
         </div>
       </div>
     );
   };
 
-  // PRODUCT ITEM COMPONENT - Individual product display card
+  // FRAGRANCE ITEM COMPONENT - Individual fragrance display card
   const AdminProductItem = ({ product, searchQuery = '' }) => {
-    // IMAGE URL HANDLER - Process and validate product image URLs
+    // IMAGE URL HANDLER - Process and validate fragrance image URLs
     const getProductImage = (imagePath) => {
       if (!imagePath) {
-        return 'https://media.istockphoto.com/id/1071359118/vector/missing-image-vector-illustration-no-image-available-vector-concept.jpg?s=612x612&w=0&k=20&c=ukQmxO3tnUxz6mk7akh7aRCw_nyO9mmuvabs9FDPpfw=';
+        return 'https://images.unsplash.com/photo-1541643600914-78b084683601?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'; // Updated luxury fallback
       }
       
       if (imagePath.startsWith('http')) {
@@ -294,7 +296,7 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
 
     const imageUrl = getProductImage(product.image);
 
-    // TEXT HIGHLIGHTER - Emphasize search matches in product text
+    // TEXT HIGHLIGHTER - Emphasize search matches in fragrance text
     const highlightMatch = (text, query) => {
       if (!query || !text) return text;
       const lowerText = text.toString().toLowerCase();
@@ -323,15 +325,18 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
           </div>
         )}
         
-        {/* PRODUCT IMAGE - Large display with error handling */}
+        {/* FRAGRANCE IMAGE - Large display with error handling */}
         <div className="product-image-wrapper">
           <img 
             src={imageUrl} 
             alt={product.name}
             className="product-image-large"
             onError={(e) => {
-              e.target.src ='https://media.istockphoto.com/id/1071359118/vector/missing-image-vector-illustration-no-image-available-vector-concept.jpg?s=612x612&w=0&k=20&c=ukQmxO3tnUxz6mk7akh7aRCw_nyO9mmuvabs9FDPpfw=' }}
+              e.target.src = 'https://images.unsplash.com/photo-1541643600914-78b084683601?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80'; // Updated fallback
+            }}
           />
+          {/* LUXURY BADGE */}
+          <div className="luxury-badge">Premium Fragrance</div> {/* Added luxury badge */}
         </div>
         
         <div className="product-info">
@@ -339,17 +344,24 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
             {highlightMatch(product.name, searchQuery)}
           </h3>
           
+          {/* FRAGRANCE NOTES - Display scent characteristics */}
+          {product.notes && (
+            <div className="fragrance-notes">
+              <strong>Scent Notes:</strong> {highlightMatch(product.notes, searchQuery)}
+            </div>
+          )}
+          
           <div className="product-meta">
             <p className="product-id">
-              ID: <strong>#{highlightMatch(product.id, searchQuery)}</strong>
+              Fragrance ID: <strong>#{highlightMatch(product.id, searchQuery)}</strong> {/* Updated label */}
             </p>
             
             <p className="product-category">
-              Category: {highlightMatch(product.category?.name || 'No Category', searchQuery)}
+              Collection: {highlightMatch(product.category?.name || 'Uncategorized', searchQuery)} {/* Updated label */}
             </p>
             
             <p className="product-description">
-              {highlightMatch(product.description || 'No description available', searchQuery)}
+              {highlightMatch(product.description || 'Experience luxury in every scent', searchQuery)} {/* Updated fallback */}
             </p>
           </div>
           
@@ -358,11 +370,9 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
               {highlightMatch(product.price, searchQuery)} DH
             </span>
             <span className={`product-stock ${product.stock > 0 ? 'stock-in' : 'stock-out'}`}>
-              {product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}
+              {product.stock > 0 ? `${product.stock} Bottles Available` : 'Out of Stock'} {/* Updated stock text */}
             </span>
           </div>
-
-         
         </div>
       </div>
     );
@@ -394,25 +404,25 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
       <div className="admin-header">
         <div className="admin-header-content">
           <div>
-            <h1 className="admin-title">Products Overview</h1>
+            <h1 className="admin-title">Luxury Fragrances Dashboard</h1> {/* Updated title */}
             <p className="admin-subtitle">
-              Quick product browsing - {totalProducts} products available
+              Premium fragrance management - {totalProducts} luxury scents in collection {/* Updated subtitle */}
             </p>
           </div>
           <button 
             className="management-button"
             onClick={() => onViewChange('admin-products')}
           >
-            Full Management
+            Full Fragrance Management {/* Updated button text */}
           </button>
         </div>
 
-        {/* SEARCH SECTION - Product filtering interface */}
+        {/* SEARCH SECTION - Fragrance filtering interface */}
         <div className="search-section">
           <div className="search-container">
             <input
               type="text"
-              placeholder="Search by ID, Name, Category, Description, or Price..."
+              placeholder="Search by ID, Fragrance Name, Collection, Scent Notes, Description, or Price..."
               value={searchQuery}
               onChange={handleInputChange}
               onKeyPress={handleKeyPress}
@@ -424,25 +434,25 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
               onClick={handleSearch}
               disabled={isLoading}
             >
-              {searchLoading ? 'Searching...' : 'Search'}
+              {searchLoading ? 'Searching Fragrances...' : 'Search Fragrances'} {/* Updated button text */}
             </button>
             <button 
               className="clear-button" 
               onClick={handleClearSearch}
               disabled={isLoading}
             >
-              Show All
+              Show All Fragrances {/* Updated button text */}
             </button>
           </div>
         </div>
       </div>
 
-      {/* CONTENT SECTION - Products display */}
+      {/* CONTENT SECTION - Fragrances display */}
       {isLoading ? (
         <div className="loading-container">
           <div className="loading-spinner"></div>
           <p className="loading-text">
-            {searchLoading ? 'Searching products...' : 'Loading products...'}
+            {searchLoading ? 'Searching luxury fragrances...' : 'Loading premium collection...'} {/* Updated loading text */}
           </p>
         </div>
       ) : (
@@ -462,19 +472,19 @@ const AdminHome = ({ currentView, onViewChange, showNotification }) => {
         ) : (
           <div className="empty-state">
             <h3>
-              {searchQuery ? 'No products found' : 'No products available'}
+              {searchQuery ? 'No fragrances found' : 'No fragrances available'} {/* Updated empty state */}
             </h3>
             <p>
               {searchQuery 
-                ? `No results found for "${searchQuery}"`
-                : 'No products available in the database'
+                ? `No luxury fragrances found for "${searchQuery}"` /* Updated message */
+                : 'No premium fragrances available in the collection yet' /* Updated message */
               }
             </p>
             <button 
               className="reload-button"
               onClick={() => fetchBasicProducts(1)}
             >
-              Reload Products
+              Reload Fragrances {/* Updated button text */}
             </button>
           </div>
         )

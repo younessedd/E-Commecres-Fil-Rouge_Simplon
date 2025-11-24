@@ -2,8 +2,10 @@
 import React, { useState } from 'react';
 //import { cartAPI, getProductImageUrl } from '../../services/api';  // API services for cart and images
 import './ProductItem.css';  // Component-specific styles
-import { cartAPI } from '../../services/api/cart.api';import { getProductImageUrl } from '../../services/api/api.config';
-// PRODUCT ITEM COMPONENT - Individual product display with cart functionality
+import { cartAPI } from '../../services/api/cart.api';
+import { getProductImageUrl } from '../../services/api/api.config';
+
+// PRODUCT ITEM COMPONENT - Individual fragrance display with cart functionality for I Smell Shop
 const ProductItem = ({ product, showNotification }) => {
   // STATE MANAGEMENT - Component state variables
   const [addingToCart, setAddingToCart] = useState(false);      // Cart addition loading state
@@ -12,7 +14,7 @@ const ProductItem = ({ product, showNotification }) => {
 
   // ADD TO CART HANDLER - Open quantity selection popup
   const handleAddToCart = async () => {
-    if (product.stock < 1) return;  // Prevent action if product is out of stock
+    if (product.stock < 1) return;  // Prevent action if fragrance is out of stock
 
     // Show the cart popup for quantity selection
     setShowCartPopup(true);
@@ -23,21 +25,21 @@ const ProductItem = ({ product, showNotification }) => {
     try {
       setAddingToCart(true);  // Start loading state for cart addition
       
-      // API CALL - Add product to cart with selected quantity
+      // API CALL - Add fragrance to cart with selected quantity
       await cartAPI.add({
-        product_id: product.id,  // Product identifier
+        product_id: product.id,  // Fragrance identifier
         quantity: quantity       // Selected quantity
       });
       
-      // SUCCESS NOTIFICATION - Confirm product addition
-      showNotification(`Added ${quantity} x ${product.name} to cart successfully!`, 'success');
+      // SUCCESS NOTIFICATION - Confirm fragrance addition
+      showNotification(`Added ${quantity} x ${product.name} to your fragrance cart successfully!`, 'success');
       
       // CLOSE POPUP AND RESET - Clean up popup state
       setShowCartPopup(false);  // Hide quantity selection popup
       setQuantity(1);           // Reset quantity to default
     } catch (error) {
       console.error('Error adding to cart:', error);
-      showNotification('Failed to add product to cart', 'error');  // Error notification
+      showNotification('Failed to add fragrance to cart', 'error');  // Updated error notification
     } finally {
       setAddingToCart(false);  // End loading state regardless of outcome
     }
@@ -63,56 +65,66 @@ const ProductItem = ({ product, showNotification }) => {
     }
   };
 
-  // IMAGE URL HANDLING - Get product image URL with fallback
+  // IMAGE URL HANDLING - Get fragrance image URL with fallback
   const imageUrl = getProductImageUrl(product.image);
   
   // TOTAL PRICE CALCULATION - Compute price for selected quantity
   const totalPrice = (product.price * quantity).toFixed(2);
 
-  // COMPONENT RENDER - Product card and popup interface
+  // COMPONENT RENDER - Fragrance card and popup interface
   return (
     <>
-      {/* PRODUCT CARD - Main product display */}
+      {/* FRAGRANCE CARD - Main fragrance display */}
       <div className="product-item-card">
         
-        {/* PRODUCT IMAGE SECTION - Product visual representation */}
+        {/* FRAGRANCE IMAGE SECTION - Product visual representation */}
         <div className="product-image-container">
           <img 
             src={imageUrl} 
             alt={product.name}  // Accessibility alt text
             className="product-image"
             onError={(e) => {
-              // FALLBACK IMAGE - Show placeholder if image fails to load
-              e.target.src = 'https://media.istockphoto.com/id/1071359118/vector/missing-image-vector-illustration-no-image-available-vector-concept.jpg?s=612x612&w=0&k=20&c=ukQmxO3tnUxz6mk7akh7aRCw_nyO9mmuvabs9FDPpfw=';
+              // FALLBACK IMAGE - Show luxury placeholder if image fails to load
+              e.target.src = 'https://images.unsplash.com/photo-1541643600914-78b084683601?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80';
             }}
           />
+          {/* LUXURY BADGE - Premium indicator */}
+          <div className="luxury-badge">Premium</div>
         </div>
         
-        {/* PRODUCT INFORMATION SECTION - Text details */}
+        {/* FRAGRANCE INFORMATION SECTION - Text details */}
         <div className="product-info">
-          {/* PRODUCT NAME - Main product title */}
+          {/* FRAGRANCE NAME - Main product title */}
           <h3 className="product-name">{product.name}</h3>
           
-          {/* PRODUCT DESCRIPTION - Product details with truncation */}
+          {/* FRAGRANCE DESCRIPTION - Product details with truncation */}
           <p className="product-description">
             {product.description ? 
               (product.description.length > 100 ? 
                 `${product.description.substring(0, 100)}...` :  // Truncate long descriptions
                 product.description  // Show full description if short
               ) : 
-              'No description available'  // Fallback for missing description
+              'Experience luxury in every scent'  // Updated fallback for missing description
             }
           </p>
           
-          {/* PRODUCT META SECTION - Price and stock information */}
+          {/* FRAGRANCE META SECTION - Price and stock information */}
           <div className="product-meta">
-            {/* PRODUCT PRICE - Display product price */}
+            {/* FRAGRANCE PRICE - Display product price */}
             <span className="product-price">{product.price} DH</span>
             {/* STOCK STATUS - Dynamic stock display with styling */}
             <span className={`product-stock ${product.stock > 0 ? 'stock-in' : 'stock-out'}`}>
-              {product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}
+              {product.stock > 0 ? `${product.stock} Bottles Available` : 'Out of Stock'}  {/* Updated stock text */}
             </span>
           </div>
+
+          {/* FRAGRANCE NOTES - Display scent characteristics if available */}
+          {product.notes && (
+            <div className="fragrance-notes">
+              <span className="notes-label">Scent Notes:</span>
+              <span className="notes-value">{product.notes}</span>
+            </div>
+          )}
         </div>
 
         {/* ACTION BUTTON SECTION - Add to cart functionality */}
@@ -133,43 +145,50 @@ const ProductItem = ({ product, showNotification }) => {
           <div className="cart-popup-container">
             {/* CLOSE BUTTON - Dismiss popup */}
             <button className="cart-popup-close" onClick={closeCartPopup}>
-              Close  {/* Close button text */}
+              ✕  {/* Updated close button */}
             </button>
             
             <div className="cart-popup-content">
-              {/* PRODUCT INFORMATION IN POPUP - Quick product overview */}
+              {/* FRAGRANCE INFORMATION IN POPUP - Quick product overview */}
               <div className="cart-popup-product">
-                {/* PRODUCT IMAGE IN POPUP */}
+                {/* FRAGRANCE IMAGE IN POPUP */}
                 <div className="cart-popup-image">
                   <img 
                     src={imageUrl} 
                     alt={product.name}
                     onError={(e) => {
-                      // FALLBACK IMAGE - Show placeholder if image fails to load
-                      e.target.src = 'https://media.istockphoto.com/id/1071359118/vector/missing-image-vector-illustration-no-image-available-vector-concept.jpg?s=612x612&w=0&k=20&c=ukQmxO3tnUxz6mk7akh7aRCw_nyO9mmuvabs9FDPpfw=';
+                      // FALLBACK IMAGE - Show luxury placeholder if image fails to load
+                      e.target.src = 'https://images.unsplash.com/photo-1541643600914-78b084683601?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80';
                     }}
                   />
                 </div>
-                {/* PRODUCT DETAILS IN POPUP */}
+                {/* FRAGRANCE DETAILS IN POPUP */}
                 <div className="cart-popup-info">
-                  <h3 className="cart-popup-title">{product.name}</h3>  {/* Product name */}
+                  <h3 className="cart-popup-title">{product.name}</h3>  {/* Fragrance name */}
                   <div className="cart-popup-price">{product.price} DH</div>  {/* Unit price */}
                   <span className={`cart-popup-stock ${product.stock > 0 ? 'in-stock' : 'out-of-stock'}`}>
-                    {product.stock > 0 ? `In Stock (${product.stock})` : 'Out of Stock'}  {/* Stock status */}
+                    {product.stock > 0 ? `${product.stock} Bottles Available` : 'Out of Stock'}  {/* Updated stock status */}
                   </span>
                 </div>
               </div>
 
-              {/* PRODUCT DESCRIPTION IN POPUP - Full description display */}
+              {/* FRAGRANCE DESCRIPTION IN POPUP - Full description display */}
               {product.description && (
                 <div className="cart-popup-description">
-                  <p>{product.description}</p>  {/* Full product description */}
+                  <p>{product.description}</p>  {/* Full fragrance description */}
+                </div>
+              )}
+
+              {/* FRAGRANCE NOTES IN POPUP - Display scent characteristics */}
+              {product.notes && (
+                <div className="cart-popup-notes">
+                  <strong>Scent Profile:</strong> {product.notes}
                 </div>
               )}
 
               {/* QUANTITY SELECTOR SECTION - Quantity adjustment controls */}
               <div className="cart-popup-quantity">
-                <span className="quantity-label">Quantity:</span>  {/* Quantity label */}
+                <span className="quantity-label">Select Quantity:</span>  {/* Updated quantity label */}
                 <div className="quantity-controls">
                   {/* DECREASE QUANTITY BUTTON */}
                   <button 
@@ -177,7 +196,7 @@ const ProductItem = ({ product, showNotification }) => {
                     onClick={decreaseQuantity}  // Decrease quantity
                     disabled={quantity <= 1}    // Disable at minimum quantity
                   >
-                    Decrease  {/* Decrease button text */}
+                    −  {/* Updated decrease button */}
                   </button>
                   {/* QUANTITY INPUT - Direct quantity entry */}
                   <input
@@ -198,14 +217,14 @@ const ProductItem = ({ product, showNotification }) => {
                     onClick={increaseQuantity}    // Increase quantity
                     disabled={quantity >= product.stock}  // Disable at maximum stock
                   >
-                    Increase  {/* Increase button text */}
+                    +  {/* Updated increase button */}
                   </button>
                 </div>
               </div>
 
               {/* TOTAL PRICE DISPLAY - Calculated total for selected quantity */}
               <div className="cart-popup-total">
-                <span className="total-label">Total Price:</span>  {/* Total label */}
+                <span className="total-label">Total Amount:</span>  {/* Updated total label */}
                 <span className="total-amount">{totalPrice} DH</span>  {/* Calculated total */}
               </div>
 
@@ -217,7 +236,7 @@ const ProductItem = ({ product, showNotification }) => {
                   onClick={closeCartPopup}  // Close popup
                   disabled={addingToCart}   // Disable during loading
                 >
-                  Cancel  {/* Cancel button text */}
+                  Continue Browsing  {/* Updated cancel button text */}
                 </button>
                 {/* CONFIRM BUTTON - Add to cart with selected quantity */}
                 <button 
@@ -231,8 +250,7 @@ const ProductItem = ({ product, showNotification }) => {
                       Adding to Cart...  {/* Loading state text */}
                     </span>
                   ) : (
-                    `Add ${quantity} to Cart` 
-                    
+                    `Add ${quantity} Bottle${quantity !== 1 ? 's' : ''} to Cart`  /* Updated confirm button text */
                   )}
                 </button>
               </div>

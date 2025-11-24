@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import './UserOrders.css';  // Component-specific styles
 import { ordersAPI } from '../../services/api/orders.api';
 
-// USER ORDERS COMPONENT - Order history and management interface
+// USER ORDERS COMPONENT - Order history and management interface for I Smell Shop
 const UserOrders = ({ onViewChange, showNotification }) => {
   // STATE MANAGEMENT - Component state variables
   const [orders, setOrders] = useState([]);                    // User's order list
@@ -124,7 +124,7 @@ const UserOrders = ({ onViewChange, showNotification }) => {
       <div className="user-orders-container">
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p className="loading-text">Loading your orders...</p>
+          <p className="loading-text">Loading your orders from I Smell Shop...</p>
         </div>
       </div>
     );
@@ -139,7 +139,7 @@ const UserOrders = ({ onViewChange, showNotification }) => {
         <div className="orders-header">
           <div className="header-title">
             <h1>My Orders</h1>  {/* Main page title */}
-            <p className="header-subtitle">Track and manage your purchase history</p>  {/* Subtitle */}
+            <p className="header-subtitle">Track and manage your fragrance purchase history at I Smell Shop</p>  {/* Updated subtitle */}
           </div>
           <button className="management-btn btn-secondary" onClick={fetchOrders}>
             Refresh Orders  {/* Refresh button text */}
@@ -176,7 +176,7 @@ const UserOrders = ({ onViewChange, showNotification }) => {
                   <div className="order-title">
                     <h3 className="order-id">Order #{order.id}</h3>  {/* Order number */}
                     <span className="items-badge">
-                      {totalItems} {totalItems === 1 ? 'item' : 'items'}  {/* Item count badge */}
+                      {totalItems} {totalItems === 1 ? 'fragrance' : 'fragrances'}  {/* Updated item count badge */}
                     </span>
                   </div>
                   
@@ -222,7 +222,7 @@ const UserOrders = ({ onViewChange, showNotification }) => {
                     {order.items.map(item => (
                       <div key={item.id} className="order-item">
                         <div className="item-info">
-                          <div className="item-name">{item.product?.name || 'Unknown Product'}</div>  {/* Product name */}
+                          <div className="item-name">{item.product?.name || 'Unknown Fragrance'}</div>  {/* Updated product name */}
                           <div className="item-details">
                             {item.quantity || 0} × {item.price || 0} DH each  {/* Quantity and price */}
                           </div>
@@ -248,12 +248,12 @@ const UserOrders = ({ onViewChange, showNotification }) => {
         /* EMPTY STATE - No orders message */
         <div className="empty-state">
           <h3>No Orders Yet</h3>  {/* Empty state title */}
-          <p>You haven't placed any orders yet. Start shopping to see your orders here!</p>  {/* Empty state message */}
+          <p>You haven't placed any orders yet. Discover our luxury fragrances to see your orders here!</p>  {/* Updated empty state message */}
           <button 
             className="management-btn btn-primary"
             onClick={handleBrowseProducts}  // Navigate to products
           >
-            Browse Products  {/* Call to action button */}
+            Browse Fragrances  {/* Updated call to action button */}
           </button>
         </div>
       )}
@@ -270,7 +270,7 @@ const UserOrders = ({ onViewChange, showNotification }) => {
             <div className="delete-modal-content">
               <h4>Confirm Deletion</h4>  {/* Confirmation title */}
               <p>
-                Are you sure you want to delete order <strong>#{selectedOrder?.id}</strong>?  {/* Order reference */}
+                Are you sure you want to delete order <strong>#{selectedOrder?.id}</strong> from I Smell Shop?  {/* Updated order reference */}
               </p>
               
               {/* ORDER DETAILS PREVIEW - Show what will be deleted */}

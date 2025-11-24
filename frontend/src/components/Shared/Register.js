@@ -1,46 +1,41 @@
 // IMPORT SECTION - React, API, and styles
 import React, { useState } from 'react';
-//import { authAPI } from '../../services/api';  // Authentication API calls
-
+// Authentication API calls
 import { authAPI } from '../../services/api/auth.api';
-import './Register.css';  // Import component-specific styles
+import './Register.css';  // Component-specific CSS
 
-// REGISTER COMPONENT - User registration form with validation
+// REGISTER COMPONENT - Handles user registration for I Smell Shop
 const Register = ({ onSwitchToLogin }) => {
+
   // STATE MANAGEMENT - Form data and UI states
   const [formData, setFormData] = useState({
-    name: '',                    // User's full name
-    email: '',                   // User's email address
-    password: '',                // User's password
-    password_confirmation: '',   // Password confirmation
-    phone: '',                   // User's phone number
-    address: '',                 // User's physical address
-    city: ''                     // User's city
+    name: '',                    // Full name input
+    email: '',                   // Email input
+    password: '',                // Password input
+    password_confirmation: '',   // Confirm password input
+    phone: '',                   // Phone number input
+    address: '',                 // Address input
+    city: ''                     // City input
   });
-  const [loading, setLoading] = useState(false);              // Loading state during API call
-  const [error, setError] = useState('');                     // Error message display
-  const [showPassword, setShowPassword] = useState(false);    // Password visibility toggle
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);  // Confirm password visibility
+  const [loading, setLoading] = useState(false);              // Loading indicator
+  const [error, setError] = useState('');                     // Error messages
+  const [showPassword, setShowPassword] = useState(false);    // Toggle password visibility
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Toggle confirm password
 
-  // INPUT CHANGE HANDLER - Update form data on user input
+  // HANDLE INPUT CHANGE - Update state dynamically when user types
   const handleChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value  // Dynamic property update
+      [e.target.name]: e.target.value
     });
-    setError('');  // Clear errors when user starts typing
+    setError(''); // Clear previous errors
   };
 
-  // PASSWORD VISIBILITY TOGGLES - Show/hide password fields
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  // PASSWORD VISIBILITY TOGGLES
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
 
-  const toggleConfirmPasswordVisibility = () => {
-    setShowConfirmPassword(!showConfirmPassword);
-  };
-
-  // PASSWORD STRENGTH CALCULATOR - Evaluate password security
+  // PASSWORD STRENGTH CALCULATOR
   const getPasswordStrength = (password) => {
     if (password.length === 0) return { strength: '', width: '0%' };
     if (password.length < 6) return { strength: 'weak', width: '33%' };
@@ -48,23 +43,22 @@ const Register = ({ onSwitchToLogin }) => {
     return { strength: 'strong', width: '100%' };
   };
 
-  // PASSWORD VALIDATION - Check if passwords match
+  // PASSWORD MATCH CHECK
   const passwordsMatch = formData.password === formData.password_confirmation;
   const passwordStrength = getPasswordStrength(formData.password);
 
-  // FORM SUBMISSION HANDLER - Process registration request
+  // FORM SUBMISSION HANDLER
   const handleSubmit = async (e) => {
-    e.preventDefault();  // Prevent default form submission
+    e.preventDefault();
     setLoading(true);
     setError('');
 
-    // CLIENT-SIDE VALIDATION - Check password requirements
-    if (formData.password !== formData.password_confirmation) {
+    // CLIENT-SIDE VALIDATION
+    if (!passwordsMatch) {
       setError('Passwords do not match.');
       setLoading(false);
       return;
     }
-
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long.');
       setLoading(false);
@@ -72,42 +66,39 @@ const Register = ({ onSwitchToLogin }) => {
     }
 
     try {
-      // API CALL - Send registration data to server
+      // API CALL - Register user
       const response = await authAPI.register(formData);
       
-      // SUCCESS HANDLER - Redirect to login page
+      // SUCCESS - Switch to login page
       onSwitchToLogin();
       console.log('Account created successfully! You can now login.');
       
     } catch (err) {
-      // ERROR HANDLER - Display appropriate error message
+      // ERROR HANDLER
       setError(err.response?.data?.message || 'Account creation failed. Please try again.');
     } finally {
-      // CLEANUP - Reset loading state regardless of outcome
       setLoading(false);
     }
   };
 
-  // COMPONENT RENDER - Registration form structure
+  // COMPONENT RENDER - Registration form
   return (
     <div className="register-container">
       <div className="register-card">
-        
-        {/* HEADER SECTION - Welcome message */}
-        <h2 className="register-title">Create Your Account</h2>
-        <p className="register-subtitle">Join our e-store community today</p>
-        
-        {/* ERROR DISPLAY - Show validation/API errors */}
+
+        {/* HEADER */}
+        <h2 className="register-title">Join I Smell Shop</h2>
+        <p className="register-subtitle">Create your account to explore luxury fragrances</p>
+
+        {/* ERROR DISPLAY */}
         {error && <div className="register-error">{error}</div>}
-        
-        {/* REGISTRATION FORM - Complete user information */}
+
+        {/* REGISTRATION FORM */}
         <form onSubmit={handleSubmit} className="register-form">
-          
-          {/* FULL NAME INPUT */}
+
+          {/* FULL NAME */}
           <div className="form-group">
-            <label className="form-label">
-              Full Name <span className="required">*</span>
-            </label>
+            <label className="form-label">Full Name <span className="required">*</span></label>
             <input
               type="text"
               name="name"
@@ -119,12 +110,10 @@ const Register = ({ onSwitchToLogin }) => {
               disabled={loading}
             />
           </div>
-          
-          {/* EMAIL INPUT */}
+
+          {/* EMAIL */}
           <div className="form-group">
-            <label className="form-label">
-              Email Address <span className="required">*</span>
-            </label>
+            <label className="form-label">Email Address <span className="required">*</span></label>
             <input
               type="email"
               name="email"
@@ -136,12 +125,10 @@ const Register = ({ onSwitchToLogin }) => {
               disabled={loading}
             />
           </div>
-          
-          {/* PASSWORD INPUT WITH STRENGTH INDICATOR */}
+
+          {/* PASSWORD WITH STRENGTH INDICATOR */}
           <div className="form-group">
-            <label className="form-label">
-              Password <span className="required">*</span>
-            </label>
+            <label className="form-label">Password <span className="required">*</span></label>
             <div className="password-input-container">
               <input
                 type={showPassword ? "text" : "password"}
@@ -161,10 +148,9 @@ const Register = ({ onSwitchToLogin }) => {
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 disabled={loading}
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? "👁️" : "👁️‍🗨️"}
               </button>
             </div>
-            {/* PASSWORD STRENGTH VISUALIZATION */}
             {formData.password && (
               <div className={`password-strength strength-${passwordStrength.strength}`}>
                 <span>Strength: {passwordStrength.strength}</span>
@@ -177,12 +163,10 @@ const Register = ({ onSwitchToLogin }) => {
               </div>
             )}
           </div>
-          
-          {/* CONFIRM PASSWORD INPUT WITH MATCH INDICATOR */}
+
+          {/* CONFIRM PASSWORD */}
           <div className="form-group">
-            <label className="form-label">
-              Confirm Password <span className="required">*</span>
-            </label>
+            <label className="form-label">Confirm Password <span className="required">*</span></label>
             <div className="password-input-container">
               <input
                 type={showConfirmPassword ? "text" : "password"}
@@ -201,22 +185,19 @@ const Register = ({ onSwitchToLogin }) => {
                 aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 disabled={loading}
               >
-                {showConfirmPassword ? "Hide" : "Show"}
+                {showConfirmPassword ? "👁️" : "👁️‍🗨️"}
               </button>
             </div>
-            {/* PASSWORD MATCH VISUALIZATION */}
             {formData.password_confirmation && (
               <div className={`password-match ${passwordsMatch ? 'matching' : 'not-matching'}`}>
                 {passwordsMatch ? '✓ Passwords match' : '✗ Passwords do not match'}
               </div>
             )}
           </div>
-          
-          {/* PHONE NUMBER INPUT */}
+
+          {/* PHONE */}
           <div className="form-group">
-            <label className="form-label">
-              Phone Number <span className="required">*</span>
-            </label>
+            <label className="form-label">Phone Number <span className="required">*</span></label>
             <input
               type="tel"
               name="phone"
@@ -228,12 +209,10 @@ const Register = ({ onSwitchToLogin }) => {
               disabled={loading}
             />
           </div>
-          
-          {/* ADDRESS TEXTAREA */}
+
+          {/* ADDRESS */}
           <div className="form-group">
-            <label className="form-label">
-              Address <span className="required">*</span>
-            </label>
+            <label className="form-label">Address <span className="required">*</span></label>
             <textarea
               name="address"
               value={formData.address}
@@ -245,12 +224,10 @@ const Register = ({ onSwitchToLogin }) => {
               disabled={loading}
             />
           </div>
-          
-          {/* CITY INPUT */}
+
+          {/* CITY */}
           <div className="form-group">
-            <label className="form-label">
-              City <span className="required">*</span>
-            </label>
+            <label className="form-label">City <span className="required">*</span></label>
             <input
               type="text"
               name="city"
@@ -262,18 +239,18 @@ const Register = ({ onSwitchToLogin }) => {
               disabled={loading}
             />
           </div>
-          
-          {/* SUBMIT BUTTON - Registration action */}
+
+          {/* SUBMIT BUTTON */}
           <button 
             type="submit" 
             className="register-button"
             disabled={loading}
           >
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? 'Creating Account...' : 'Join I Smell Shop'}
           </button>
         </form>
-        
-        {/* LOGIN LINK SECTION - Switch to login form */}
+
+        {/* LINK TO LOGIN FORM */}
         <div className="login-section">
           <span className="login-text">Already have an account?</span>
           <a 
@@ -284,13 +261,14 @@ const Register = ({ onSwitchToLogin }) => {
             }}
             className="login-link"
           >
-            Login Here
+            Sign In Here
           </a>
         </div>
+
       </div>
     </div>
   );
 };
 
-// EXPORT COMPONENT - Default export
+// EXPORT COMPONENT
 export default Register;

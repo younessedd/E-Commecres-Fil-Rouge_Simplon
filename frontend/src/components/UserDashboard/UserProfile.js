@@ -140,7 +140,7 @@ const UserProfile = ({ user, onViewChange, showNotification }) => {
       <div className="profile-header">
         <div className="header-content">
           <h1>My Profile</h1>  {/* Main profile title */}
-          <p>Manage your personal information</p>  {/* Subtitle */}
+          <p>Manage your personal information at I Smell Shop</p>  {/* Updated subtitle */}
         </div>
         <div className="header-actions">
           {/* CONDITIONAL BUTTONS - Edit mode vs view mode */}

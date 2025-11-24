@@ -1,3 +1,4 @@
+// HeroPage.js - Luxury perfume store hero section with image slider
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination, Autoplay } from 'swiper/modules';
@@ -5,74 +6,77 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import './HeroPage.css';
 
+// HERO PAGE COMPONENT - Main landing page with image slider
 const HeroPage = ({ onViewChange }) => {
+  // SLIDE DATA - Array of perfume-related slides with images and content
   const slides = [
     {
       id: 1,
-      title: "Welcome to E-Store",
-      description: "Your one-stop shop for everything",
-      image: "https://images.unsplash.com/photo-1607082350899-7e105aa886ae?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      title: "Welcome to I Smell Shop", // Updated brand name
+      description: "Discover luxury perfumes and exclusive fragrances", // Updated description
+      image: "https://images.pexels.com/photos/8450541/pexels-photo-8450541.jpeg" // Background image URL
     },
     {
       id: 2,
-      title: "Best Quality Products",
-      description: "Find what you need at great prices",
-      image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      title: "Premium Perfumes", // Updated title
+      description: "Experience elegance and sophistication in every scent",
+      image: "https://images.pexels.com/photos/8450345/pexels-photo-8450345.jpeg"
     },
     {
       id: 3,
-      title: "Fast Delivery",
-      description: "Get your orders quickly and safely",
-      image: "https://images.unsplash.com/photo-1576675466969-38eeae4b41f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2071&q=80"
+      title: "Exclusive Collections",
+      description: "Handpicked fragrances for every mood and occasion",
+      image: "https://images.pexels.com/photos/6801188/pexels-photo-6801188.jpeg"
     },
     {
       id: 4,
-      title: "Trendy Fashion",
-      description: "Stay stylish with our latest collections",
-      image: "https://images.unsplash.com/photo-1521335629791-ce4aec67dd47?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      title: "Fragrant Moments",
+      description: "Capture every special moment with our luxury scents", // Updated description
+      image: "https://images.pexels.com/photos/8450543/pexels-photo-8450543.jpeg"
     },
     {
       id: 5,
-      title: "Electronics Hub",
-      description: "Smart gadgets for smart living",
-      image: "https://images.unsplash.com/photo-1581090700227-4c4d1a3f3d3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      title: "Signature Scents",
+      description: "Find the perfume that defines your personality",
+      image: "https://images.pexels.com/photos/9790397/pexels-photo-9790397.jpeg"
     },
     {
       id: 6,
-      title: "Home Essentials",
-      description: "Everything you need for your home",
-      image: "https://images.unsplash.com/photo-1616627454275-9a8f8f8f8f8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      title: "Elegant Bottles",
+      description: "Beautifully crafted bottles for a luxurious experience", // Updated description
+      image: "https://images.pexels.com/photos/12428350/pexels-photo-12428350.jpeg"
     },
     {
       id: 7,
-      title: "Sports & Fitness",
-      description: "Gear up for an active lifestyle",
-      image: "https://images.unsplash.com/photo-1599058917212-9a8f8f8f8f8f?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      title: "Sensory Experience",
+      description: "Awaken your senses with our exclusive fragrances",
+      image: "https://images.pexels.com/photos/932577/pexels-photo-932577.jpeg"
     },
     {
       id: 8,
-      title: "Beauty & Care",
-      description: "Pamper yourself with top brands",
-      image: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      title: "Limited Editions",
+      description: "Exclusive collections available for a limited time",
+      image: "https://images.pexels.com/photos/136651/pexels-photo-136651.jpeg"
     },
     {
       id: 9,
-      title: "Books & Stationery",
-      description: "Knowledge and creativity at your fingertips",
-      image: "https://images.unsplash.com/photo-1512820790803-83ca734da794?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      title: "Daily Luxury",
+      description: "Make every day special with our premium perfumes", // Updated description
+      image: "https://images.pexels.com/photos/3774939/pexels-photo-3774939.jpeg"
     },
     {
       id: 10,
-      title: "Global Marketplace",
-      description: "Connecting buyers and sellers worldwide",
-      image: "https://images.unsplash.com/photo-1509395176047-4a66953fd231?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
+      title: "The Art of Perfume",
+      description: "Where passion meets fragrance craftsmanship",
+      image: "https://images.pexels.com/photos/31650365/pexels-photo-31650365.jpeg"
     }
   ];
 
   return (
     <div className="hero-page-container">
-      {/* Hero Section */}
+      {/* HERO SECTION - Main slider section */}
       <section className="hero-section">
+        {/* SWIPER SLIDER - Image carousel with autoplay and pagination */}
         <Swiper
           modules={[Pagination, Autoplay]}
           pagination={{ clickable: true }}
@@ -81,21 +85,25 @@ const HeroPage = ({ onViewChange }) => {
           speed={800}
           className="hero-swiper"
         >
+          {/* SLIDE MAPPING - Generate slides from data array */}
           {slides.map(slide => (
             <SwiperSlide key={slide.id}>
               <div
                 className="hero-slide"
                 style={{ backgroundImage: `url(${slide.image})` }}
               >
+                {/* OVERLAY - Dark overlay for text readability */}
                 <div className="hero-overlay">
+                  {/* CONTENT - Text and button container */}
                   <div className="hero-content">
                     <h1 className="hero-title">{slide.title}</h1>
                     <p className="hero-description">{slide.description}</p>
+                    {/* LOGIN BUTTON - Navigates to login view */}
                     <button 
                       className="login-btn" 
                       onClick={() => onViewChange('login')}
                     >
-                      Login
+                      Explore Collection
                     </button>
                   </div>
                 </div>
@@ -108,4 +116,5 @@ const HeroPage = ({ onViewChange }) => {
   );
 };
 
+// DEFAULT EXPORT - Make component available for import
 export default HeroPage;

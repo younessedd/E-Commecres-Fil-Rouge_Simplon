@@ -1,32 +1,30 @@
 import React, { useState, useEffect } from 'react';
-//import { categoriesAPI } from '../../services/api';
-
 import { categoriesAPI } from '../../services/api/categories.api';
 import './CategoriesManagement.css';
 
-// CATEGORIES MANAGEMENT COMPONENT - Admin interface for category management
+// CATEGORIES MANAGEMENT COMPONENT - Admin interface for fragrance collections management
 const CategoriesManagement = ({ showNotification }) => {
   // STATE MANAGEMENT - Application data and UI state
-  const [allCategories, setAllCategories] = useState([]);           // Complete categories dataset
-  const [categories, setCategories] = useState([]);                 // Currently displayed categories
-  const [loading, setLoading] = useState(true);                     // Initial data loading state
-  const [showEditModal, setShowEditModal] = useState(false);        // Add/Edit modal visibility
-  const [showDeleteModal, setShowDeleteModal] = useState(false);    // Delete confirmation modal visibility
-  const [selectedCategory, setSelectedCategory] = useState(null);   // Category selected for editing/deletion
-  const [formLoading, setFormLoading] = useState(false);            // Form submission loading state
-  const [searchQuery, setSearchQuery] = useState('');               // Search filter input
-  const [isMobile, setIsMobile] = useState(false);                  // Responsive layout detection
+  const [allCategories, setAllCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [formLoading, setFormLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isMobile, setIsMobile] = useState(false);
   
   // PAGINATION STATE - Data pagination controls
-  const [currentPage, setCurrentPage] = useState(1);                // Current page number
-  const [lastPage, setLastPage] = useState(1);                      // Total number of pages
-  const [totalCategories, setTotalCategories] = useState(0);        // Total categories count
-  const [perPage] = useState(9);                                    // Items per page (constant)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [totalCategories, setTotalCategories] = useState(0);
+  const [perPage] = useState(9);
 
-  // FORM STATE - Category form data
+  // FORM STATE - Collection form data
   const [formData, setFormData] = useState({
-    name: '',   // Category name input
-    slug: ''    // Category slug input
+    name: '',
+    slug: ''
   });
 
   // RESPONSIVE LAYOUT EFFECT - Detect screen size changes
@@ -41,12 +39,12 @@ const CategoriesManagement = ({ showNotification }) => {
     return () => window.removeEventListener('resize', checkScreenSize);
   }, []);
 
-  // INITIAL DATA LOADING - Fetch categories on component mount
+  // INITIAL DATA LOADING - Fetch collections on component mount
   useEffect(() => {
     fetchAllCategories();
   }, []);
 
-  // FETCH ALL CATEGORIES - Retrieve complete categories dataset from API
+  // FETCH ALL COLLECTIONS - Retrieve complete collections dataset from API
   const fetchAllCategories = async () => {
     try {
       setLoading(true);
@@ -62,33 +60,28 @@ const CategoriesManagement = ({ showNotification }) => {
       updateDisplayedCategories(categoriesData, 1);
       
     } catch (error) {
-      console.error('Error fetching categories:', error);
-      
-      if (error.message.includes('AUTH_REQUIRED')) {
-        showNotification('Please log in to access categories', 'error');
-      } else {
-        showNotification('Failed to load categories', 'error');
-      }
+      console.error('Error fetching fragrance collections:', error);
+      showNotification('Failed to load fragrance collections', 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  // UPDATE DISPLAYED CATEGORIES - Paginate and filter categories for display
+  // UPDATE DISPLAYED COLLECTIONS - Paginate and filter collections for display
   const updateDisplayedCategories = (categoriesData, page) => {
     const startIndex = (page - 1) * perPage;
     const endIndex = startIndex + perPage;
     setCategories(categoriesData.slice(startIndex, endIndex));
   };
 
-  // SEARCH HANDLER - Filter categories based on search criteria
+  // SEARCH HANDLER - Filter collections based on search criteria
   const handleSearch = () => {
     if (!searchQuery.trim()) {
       updateDisplayedCategories(allCategories, 1);
       setCurrentPage(1);
       setTotalCategories(allCategories.length);
       setLastPage(Math.ceil(allCategories.length / perPage));
-      showNotification('Showing all categories', 'info');
+      showNotification('Showing all fragrance collections', 'info');
       return;
     }
 
@@ -105,9 +98,9 @@ const CategoriesManagement = ({ showNotification }) => {
     setCurrentPage(1);
 
     if (filteredCategories.length > 0) {
-      showNotification(`Found ${filteredCategories.length} categor${filteredCategories.length !== 1 ? 'ies' : 'y'} for "${searchQuery}"`, 'success');
+      showNotification(`Found ${filteredCategories.length} collection${filteredCategories.length !== 1 ? 's' : ''} for "${searchQuery}"`, 'success');
     } else {
-      showNotification(`No categories found for "${searchQuery}"`, 'info');
+      showNotification(`No fragrance collections found for "${searchQuery}"`, 'info');
     }
   };
 
@@ -127,39 +120,26 @@ const CategoriesManagement = ({ showNotification }) => {
     }));
   };
 
-  // FORM SUBMISSION HANDLER - Create or update category
+  // FORM SUBMISSION HANDLER - Create or update collection
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormLoading(true);
     
     try {
       if (selectedCategory && selectedCategory.id) {
-        // Update existing category
         await categoriesAPI.update(selectedCategory.id, formData);
-        showNotification(`Category "${formData.name}" updated successfully!`, 'success');
+        showNotification(`Fragrance collection "${formData.name}" updated successfully!`, 'success');
       } else {
-        // Create new category
         await categoriesAPI.create(formData);
-        showNotification(`Category "${formData.name}" added successfully!`, 'success');
+        showNotification(`Fragrance collection "${formData.name}" added successfully!`, 'success');
       }
 
       closeModals();
       fetchAllCategories();
       
     } catch (error) {
-      console.error('Error saving category:', error);
-      
-      let errorMessage = 'Failed to save category';
-      
-      if (error.message.includes('AUTH_REQUIRED')) {
-        errorMessage = 'Please log in to save categories';
-      } else if (error.message.includes('No query results')) {
-        errorMessage = 'Category not found. It may have been deleted.';
-      } else {
-        errorMessage = error.message || 'Unknown error occurred';
-      }
-      
-      showNotification(`${errorMessage}`, 'error');
+      console.error('Error saving fragrance collection:', error);
+      showNotification('Failed to save fragrance collection', 'error');
     } finally {
       setFormLoading(false);
     }
@@ -176,7 +156,7 @@ const CategoriesManagement = ({ showNotification }) => {
     });
   };
 
-  // EDIT HANDLER - Open edit modal with category data
+  // EDIT HANDLER - Open edit modal with collection data
   const handleEdit = (category) => {
     setSelectedCategory(category);
     setFormData({
@@ -186,13 +166,13 @@ const CategoriesManagement = ({ showNotification }) => {
     setShowEditModal(true);
   };
 
-  // DELETE MODAL HANDLER - Open confirmation dialog for category deletion
+  // DELETE MODAL HANDLER - Open confirmation dialog for collection deletion
   const openDeleteModal = (category) => {
     setSelectedCategory(category);
     setShowDeleteModal(true);
   };
 
-  // CATEGORY DELETION HANDLER - Remove category from system
+  // COLLECTION DELETION HANDLER - Remove collection from system
   const handleDelete = async () => {
     if (!selectedCategory) return;
 
@@ -204,7 +184,6 @@ const CategoriesManagement = ({ showNotification }) => {
       
       await categoriesAPI.delete(categoryIdToDelete);
       
-      // Update local state after successful deletion
       const updatedCategories = allCategories.filter(category => category.id !== categoryIdToDelete);
       setAllCategories(updatedCategories);
       setTotalCategories(updatedCategories.length);
@@ -212,49 +191,22 @@ const CategoriesManagement = ({ showNotification }) => {
       const calculatedLastPage = Math.ceil(updatedCategories.length / perPage) || 1;
       setLastPage(calculatedLastPage);
       
-      // Update displayed categories
       const newCurrentPage = currentPage > calculatedLastPage ? Math.max(1, calculatedLastPage) : currentPage;
       setCurrentPage(newCurrentPage);
       updateDisplayedCategories(updatedCategories, newCurrentPage);
       
-      showNotification(`Category "${categoryName}" deleted successfully!`, 'success');
+      showNotification(`Fragrance collection "${categoryName}" deleted successfully!`, 'success');
       closeModals();
       
     } catch (error) {
       console.error('Delete error:', error);
-      
-      let errorMessage = 'Failed to delete category';
-      
-      if (error.message.includes('AUTH_REQUIRED')) {
-        errorMessage = 'Please log in to delete categories';
-      } else if (error.message.includes('NOT_FOUND') || error.message.includes('No query results')) {
-        errorMessage = 'Category not found or already deleted';
-        // Remove from local state anyway since it doesn't exist on server
-        const updatedCategories = allCategories.filter(category => category.id !== categoryIdToDelete);
-        setAllCategories(updatedCategories);
-        setTotalCategories(updatedCategories.length);
-        
-        const calculatedLastPage = Math.ceil(updatedCategories.length / perPage) || 1;
-        setLastPage(calculatedLastPage);
-        
-        const newCurrentPage = currentPage > calculatedLastPage ? Math.max(1, calculatedLastPage) : currentPage;
-        setCurrentPage(newCurrentPage);
-        updateDisplayedCategories(updatedCategories, newCurrentPage);
-        
-        showNotification('Category was already deleted from server', 'info');
-        closeModals();
-        return;
-      } else {
-        errorMessage = error.message || 'Unknown error occurred';
-      }
-      
-      showNotification(`${errorMessage}`, 'error');
+      showNotification('Failed to delete fragrance collection', 'error');
     } finally {
       setFormLoading(false);
     }
   };
 
-  // PAGINATION HANDLER - Navigate between category pages
+  // PAGINATION HANDLER - Navigate between collection pages
   const handlePageChange = (page) => {
     setCurrentPage(page);
     updateDisplayedCategories(allCategories, page);
@@ -324,13 +276,13 @@ const CategoriesManagement = ({ showNotification }) => {
           {pages}
         </div>
         <div className="pagination-info">
-          Showing {categories.length} of {totalCategories} categories | Page {currentPage} of {lastPage}
+          Showing {categories.length} of {totalCategories} fragrance collections | Page {currentPage} of {lastPage}
         </div>
       </div>
     );
   };
 
-  // ACTION BUTTONS COMPONENT - Edit and Delete buttons for each category
+  // ACTION BUTTONS COMPONENT - Edit and Delete buttons for each collection
   const ActionButtons = ({ category }) => (
     <div className="action-buttons">
       <button 
@@ -348,27 +300,26 @@ const CategoriesManagement = ({ showNotification }) => {
     </div>
   );
 
-  // CATEGORY ROW RENDERER - Display category information based on screen size
+  // COLLECTION ROW RENDERER - Display collection information based on screen size
   const renderCategoryRow = (category) => {
-    // MOBILE LAYOUT - Card-based design for small screens
     if (isMobile) {
       return (
         <div key={category.id} className="data-card-mobile">
           <div className="category-card-header">
             <div className="category-id-mobile">
-              #{category.id}
+              Collection #{category.id}
             </div>
           </div>
           
           <div className="category-card-body">
             <div className="category-info-grid">
               <div className="category-info-item">
-                <span className="info-label">Category Name</span>
+                <span className="info-label">Collection Name</span>
                 <span className="info-value">{category.name}</span>
               </div>
               
               <div className="category-info-item">
-                <span className="info-label">Slug</span>
+                <span className="info-label">URL Slug</span>
                 <div className="category-slug-mobile">
                   {category.slug || 'N/A'}
                 </div>
@@ -394,7 +345,6 @@ const CategoriesManagement = ({ showNotification }) => {
       );
     }
 
-    // DESKTOP LAYOUT - Table-based design for large screens
     return (
       <tr key={category.id} className="category-row">
         <td className="category-id-cell">
@@ -423,15 +373,15 @@ const CategoriesManagement = ({ showNotification }) => {
     return (
       <div className="loading-container">
         <div className="loading-spinner"></div>
-        <p className="loading-text">Loading categories...</p>
+        <p className="loading-text">Loading fragrance collections...</p>
       </div>
     );
   }
 
-  // MAIN COMPONENT RENDER - Category management interface
+  // MAIN COMPONENT RENDER - Collection management interface
   return (
     <div className="management-container">
-      {/* FLOATING ACTION BUTTON - Quick access to add new category */}
+      {/* FLOATING ACTION BUTTON - Quick access to add new collection */}
       <button 
         className="fixed-add-button"
         onClick={() => {
@@ -442,7 +392,7 @@ const CategoriesManagement = ({ showNotification }) => {
           });
           setShowEditModal(true);
         }}
-        title="Add New Category"
+        title="Add New Collection"
       >
         +
       </button>
@@ -451,17 +401,17 @@ const CategoriesManagement = ({ showNotification }) => {
       <div className="management-card">
         <div className="management-header">
           <div className="header-title">
-            <h1>Categories Management</h1>
-            <p className="header-subtitle">Manage your product categories efficiently</p>
+            <h1>Fragrance Collections Management</h1>
+            <p className="header-subtitle">Manage your luxury fragrance collections and scent categories</p>
           </div>
         </div>
 
-        {/* SEARCH SECTION - Category filtering interface */}
+        {/* SEARCH SECTION - Collection filtering interface */}
         <div className="search-container">
           <div className="search-box">
             <input
               type="text"
-              placeholder="Search by category ID, name, or slug..."
+              placeholder="Search by collection ID, name, or URL slug..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -469,35 +419,35 @@ const CategoriesManagement = ({ showNotification }) => {
             />
             <div className="search-actions">
               <button className="management-btn btn-primary btn-search" onClick={handleSearch}>
-                Search
+                Search Collections
               </button>
               <button className="management-btn btn-secondary" onClick={() => {
                 setSearchQuery('');
                 fetchAllCategories();
               }}>
-                Clear
+                Show All Collections
               </button>
             </div>
           </div>
           <div className="search-tips">
-            Search tips: Enter category ID, name, or slug to find specific categories
+            Search tips: Enter collection ID, name, or URL slug to find specific fragrance collections
           </div>
         </div>
       </div>
 
-      {/* EDIT/ADD CATEGORY MODAL - Form for creating/updating categories */}
+      {/* EDIT/ADD COLLECTION MODAL - Form for creating/updating collections */}
       {showEditModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h3>{selectedCategory ? `Edit Category #${selectedCategory.id}` : 'Add New Category'}</h3>
+              <h3>{selectedCategory ? `Edit Collection #${selectedCategory.id}` : 'Add New Fragrance Collection'}</h3>
               <button className="modal-close" onClick={closeModals}>Close</button>
             </div>
             
             <form onSubmit={handleSubmit} className="management-form">
               {selectedCategory && (
                 <div className="form-group full-width">
-                  <label>Category ID</label>
+                  <label>Collection ID</label>
                   <input
                     type="text"
                     value={selectedCategory.id}
@@ -509,27 +459,27 @@ const CategoriesManagement = ({ showNotification }) => {
 
               <div className="form-grid">
                 <div className="form-group">
-                  <label>Category Name *</label>
+                  <label>Collection Name *</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
                     required
-                    placeholder="Enter category name"
+                    placeholder="Enter collection name (e.g., Floral, Woody, Citrus)"
                     className="form-input"
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Slug *</label>
+                  <label>URL Slug *</label>
                   <input
                     type="text"
                     name="slug"
                     value={formData.slug}
                     onChange={handleInputChange}
                     required
-                    placeholder="Enter category slug"
+                    placeholder="Enter URL-friendly slug (e.g., floral-scents)"
                     className="form-input"
                   />
                 </div>
@@ -552,10 +502,10 @@ const CategoriesManagement = ({ showNotification }) => {
                   {formLoading ? (
                     <span className="loading-content">
                       <div className="loading-spinner-small"></div>
-                      Saving...
+                      Saving Collection...
                     </span>
                   ) : (
-                    selectedCategory ? 'Update Category' : 'Add Category'
+                    selectedCategory ? 'Update Collection' : 'Add Collection'
                   )}
                 </button>
               </div>
@@ -564,23 +514,23 @@ const CategoriesManagement = ({ showNotification }) => {
         </div>
       )}
 
-      {/* DELETE CONFIRMATION MODAL - Category deletion safety check */}
+      {/* DELETE CONFIRMATION MODAL - Collection deletion safety check */}
       {showDeleteModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h3>Delete Category</h3>
+              <h3>Delete Fragrance Collection</h3>
               <button className="modal-close" onClick={closeModals}>Close</button>
             </div>
             
             <div className="delete-modal-content">
-              <div className="delete-icon">Warning</div>
-              <h4>Confirm Deletion</h4>
+              <div className="delete-icon">⚠️</div>
+              <h4>Confirm Collection Deletion</h4>
               <p>
-                Are you sure you want to delete category <strong>"{selectedCategory?.name}"</strong> (ID: {selectedCategory?.id})?
+                Are you sure you want to delete the fragrance collection <strong>"{selectedCategory?.name}"</strong> (ID: {selectedCategory?.id})?
               </p>
               <div className="delete-warning">
-                This action cannot be undone and all category data will be permanently lost!
+                ⚠️ This action cannot be undone! All fragrances in this collection will remain but will lose their category assignment.
               </div>
               
               <div className="delete-actions">
@@ -589,7 +539,7 @@ const CategoriesManagement = ({ showNotification }) => {
                   onClick={closeModals}
                   disabled={formLoading}
                 >
-                  Cancel
+                  Keep Collection
                 </button>
                 <button 
                   className="management-btn btn-danger" 
@@ -602,7 +552,7 @@ const CategoriesManagement = ({ showNotification }) => {
                       Deleting...
                     </span>
                   ) : (
-                    'Confirm Delete'
+                    'Delete Collection'
                   )}
                 </button>
               </div>
@@ -611,23 +561,23 @@ const CategoriesManagement = ({ showNotification }) => {
         </div>
       )}
 
-      {/* CATEGORIES LIST SECTION - Main categories display area */}
+      {/* COLLECTIONS LIST SECTION - Main collections display area */}
       <div className="management-card">
         <div className="section-header">
-          <h3>Categories List</h3>
+          <h3>Fragrance Collections</h3>
           <div className="products-count">
-            {totalCategories} categor{totalCategories !== 1 ? 'ies' : 'y'} total
+            {totalCategories} collection{totalCategories !== 1 ? 's' : ''} in your luxury portfolio
           </div>
         </div>
         
         {categories.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">No Categories</div>
-            <h4>No Categories Found</h4>
+            <div className="empty-icon">🌸</div>
+            <h4>No Fragrance Collections Found</h4>
             <p>
               {searchQuery 
-                ? `No results found for "${searchQuery}"`
-                : 'There are no categories in your database yet.'
+                ? `No fragrance collections found for "${searchQuery}"`
+                : 'Start building your luxury fragrance portfolio by creating your first collection.'
               }
             </p>
             {!searchQuery && (
@@ -635,26 +585,24 @@ const CategoriesManagement = ({ showNotification }) => {
                 className="management-btn btn-primary"
                 onClick={() => setShowEditModal(true)}
               >
-                Add Your First Category
+                Create Your First Collection
               </button>
             )}
           </div>
         ) : (
           <>
             {isMobile ? (
-              // MOBILE LAYOUT - Card-based display
               <div className="data-grid-mobile">
                 {categories.map(category => renderCategoryRow(category))}
               </div>
             ) : (
-              // DESKTOP LAYOUT - Table-based display
               <div className="table-container">
                 <table className="data-table">
                   <thead>
                     <tr>
-                      <th>ID</th>
-                      <th>Name</th>
-                      <th>Slug</th>
+                      <th>Collection ID</th>
+                      <th>Collection Name</th>
+                      <th>URL Slug</th>
                       <th>Created Date</th>
                       <th>Actions</th>
                     </tr>

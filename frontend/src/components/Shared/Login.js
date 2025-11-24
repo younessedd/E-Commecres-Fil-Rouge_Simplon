@@ -58,8 +58,8 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
       <div className="login-card">
         
         {/* HEADER SECTION - Welcome message */}
-        <h2 className="login-title">Welcome Back</h2>
-        <p className="login-subtitle">Login to your account</p>
+        <h2 className="login-title">Welcome to I Smell Shop</h2>
+        <p className="login-subtitle">Sign in to your account</p>
         
         {/* ERROR DISPLAY - Show validation/API errors */}
         {error && <div className="login-error">{error}</div>}
@@ -103,7 +103,7 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
                 aria-label={showPassword ? "Hide password" : "Show password"}
                 disabled={loading}  // Disable during loading
               >
-                {showPassword ? "Hide" : "Show"}
+                {showPassword ? "👁️" : "👁️‍🗨️"}
               </button>
             </div>
           </div>
@@ -114,13 +114,13 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
             className="login-button"
             disabled={loading}
           >
-            {loading ? 'Signing In...' : 'Login'}
+            {loading ? 'Signing In...' : 'Login to I Smell Shop'}
           </button>
         </form>
         
         {/* REGISTRATION LINK - Switch to register form */}
         <div className="register-section">
-          <span className="register-text">Don't have an account?</span>
+          <span className="register-text">New to I Smell Shop?</span>
           <a 
             href="#register" 
             onClick={(e) => { 

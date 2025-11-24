@@ -42,7 +42,7 @@ const Navbar = ({ user, onLogout, onViewChange }) => {
           tabIndex={0}
           onKeyPress={(e) => e.key === 'Enter' && handleNavigation(user ? 'products' : 'home')}
         >
-          E‑Store Manager
+          I Smell Shop
         </div>
 
         {/* MOBILE MENU TOGGLE BUTTON - Hamburger menu for small screens */}
@@ -99,7 +99,7 @@ const Navbar = ({ user, onLogout, onViewChange }) => {
               className="nav-link" 
               onClick={() => handleNavigation('cart')}
             >
-              Cart Shopping 
+              Shopping Cart
             </button>
             <button 
               className="nav-link" 
@@ -125,12 +125,12 @@ const Navbar = ({ user, onLogout, onViewChange }) => {
         {/* ADMINISTRATOR MENU - Management dashboard options */}
         {user && user.role === 'admin' && (
           <>
-            <button 
+            {/* <button 
               className="nav-link" 
               onClick={() => handleNavigation('admin-home')}
             >
-              All Products
-            </button>
+              Dashboard
+            </button> */}
             <button 
               className="nav-link" 
               onClick={() => handleNavigation('admin-products')}

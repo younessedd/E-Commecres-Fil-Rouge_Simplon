@@ -1,5 +1,5 @@
 // API CONFIGURATION - Base URL for all API endpoints
-export const API_BASE_URL = 'http://localhost:8000/api';
+export const API_BASE_URL = process.env.REACT_APP_API_URL;
 
 // CORE REQUEST HANDLER - Main function for all API calls
 export const makeRequest = async (endpoint, options = {}) => {
@@ -131,7 +131,7 @@ export const getProductImageUrl = (imagePath) => {
     return imagePath;
   }
   
-  const baseUrl = 'http://localhost:8000';
+  const baseUrl = process.env.REACT_APP_API_BASE_URL;
   
   if (imagePath.startsWith('storage/')) {
     return `${baseUrl}/${imagePath}`;

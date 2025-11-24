@@ -4,7 +4,8 @@ import CartItem from './CartItem';  // Individual cart item component
 //import { cartAPI } from '../../services/api';  // API service for cart operations
 import './ShoppingCart.css';  // Component-specific styles
 import { cartAPI } from '../../services/api/cart.api';
-// SHOPPING CART COMPONENT - Cart management and checkout interface
+
+// SHOPPING CART COMPONENT - Cart management and checkout interface for I Smell Shop
 const ShoppingCart = ({ onViewChange, showNotification }) => {
   // STATE MANAGEMENT - Component state variables
   const [cartItems, setCartItems] = useState([]);                    // Array of cart items
@@ -113,7 +114,7 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
       closeModals();
       
       // SUCCESS NOTIFICATION - Confirm order creation
-      showNotification('Order placed successfully! Thank you for your purchase.', 'success');
+      showNotification('Order placed successfully! Thank you for your purchase at I Smell Shop.', 'success');
       
       // REDIRECT TO ORDERS - Navigate to order history after delay
       setTimeout(() => {
@@ -133,7 +134,7 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
         } else if (error.message.includes('empty') || error.message.includes('EMPTY')) {
           errorMessage = 'Your cart is empty';
         } else if (error.message.includes('stock') || error.message.includes('STOCK')) {
-          errorMessage = 'Some items are out of stock';
+          errorMessage = 'Some fragrances are out of stock';
         } else {
           errorMessage = error.message;
         }
@@ -198,8 +199,8 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
 
   // GET PRODUCT NAME - Extract product name from item
   const getProductName = (item) => {
-    if (!item) return 'Unknown Product';
-    return item.product?.name || item.name || 'Unknown Product';
+    if (!item) return 'Unknown Fragrance';
+    return item.product?.name || item.name || 'Unknown Fragrance';
   };
 
   // GET PRODUCT PRICE - Extract product price from item
@@ -234,7 +235,7 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
       <div className="shopping-cart-container">
         <div className="loading-container">
           <div className="loading-spinner"></div>
-          <p className="loading-text">Loading your cart...</p>
+          <p className="loading-text">Loading your fragrance cart...</p>
         </div>
       </div>
     );
@@ -249,7 +250,7 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
         <div className="header-content">
           <div className="header-title">
             <h1>Shopping Cart</h1>  {/* Main page title */}
-            <p className="header-subtitle">Review and manage your items</p>  {/* Subtitle */}
+            <p className="header-subtitle">Review and manage your luxury fragrances</p>  {/* Updated subtitle */}
           </div>
           
           {/* ACTION BUTTONS - Only show when cart has items */}
@@ -278,11 +279,11 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
           <div className="summary-grid">
             <div className="summary-item">
               <div className="summary-value items">{cartItems.length}</div>  {/* Unique items count */}
-              <div className="summary-label">Unique Items</div>
+              <div className="summary-label">Unique Fragrances</div>  {/* Updated label */}
             </div>
             <div className="summary-item">
               <div className="summary-value quantity">{totalItems}</div>  {/* Total quantity */}
-              <div className="summary-label">Total Quantity</div>
+              <div className="summary-label">Total Bottles</div>  {/* Updated label */}
             </div>
             <div className="summary-item">
               <div className="summary-value amount">{totalAmount.toFixed(2)} DH</div>  {/* Total amount */}
@@ -310,7 +311,7 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
               <div className="order-summary-content">
                 <div className="order-summary-info">
                   <h3>Order Summary</h3>  {/* Summary title */}
-                  <p>{totalItems} items in cart</p>  {/* Item count */}
+                  <p>{totalItems} fragrance bottles in cart</p>  {/* Updated item count */}
                 </div>
                 <div className="order-total-display">
                   <div className="order-total-label">Total Amount</div>
@@ -323,22 +324,22 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
                 className="management-btn btn-success checkout-btn"
                 onClick={openCheckoutModal}  // Open checkout confirmation
               >
-                Proceed to Checkout
-              </button>
+                Complete Your Fragrance Order
+              </button>  {/* Updated button text */}
             </div>
           </div>
         ) : (
           /* EMPTY CART STATE - No items message */
           <div className="empty-state">
-            <h3>Your Cart is Empty</h3>  {/* Empty state title */}
+            <h3>Your Fragrance Cart is Empty</h3>  {/* Updated empty state title */}
             <p>
-              Looks like you haven't added any products to your cart yet.
-            </p>  {/* Empty state message */}
+              Discover our luxury perfumes and add your favorite scents to start building your collection.
+            </p>  {/* Updated empty state message */}
             <button 
               className="management-btn btn-primary"
               onClick={handleBrowseProducts}  // Navigate to products
             >
-              Browse Products  {/* Call to action */}
+              Explore Luxury Fragrances  {/* Updated call to action */}
             </button>
           </div>
         )}
@@ -349,18 +350,18 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h3>Confirm Checkout</h3>  {/* Modal title */}
+              <h3>Confirm Your Fragrance Order</h3>  {/* Updated modal title */}
               <button className="modal-close" onClick={closeModals}>Close</button>  {/* Close button */}
             </div>
             
             <div className="modal-body">
               <div className="confirmation-content">
-                <h4>Ready to Complete Your Order?</h4>  {/* Confirmation question */}
-                <p>You're about to purchase {totalItems} items for a total of <strong>{totalAmount.toFixed(2)} DH</strong></p>  {/* Order details */}
+                <h4>Ready to Complete Your Fragrance Order?</h4>  {/* Updated confirmation question */}
+                <p>You're about to purchase {totalItems} fragrance bottles for a total of <strong>{totalAmount.toFixed(2)} DH</strong></p>  {/* Updated order details */}
                 
                 {/* ORDER PREVIEW - Show first few items */}
                 <div className="order-preview">
-                  <h5>Order Preview:</h5>  {/* Preview title */}
+                  <h5>Your Fragrance Selection:</h5>  {/* Updated preview title */}
                   <div className="preview-items">
                     {cartItems.slice(0, 3).map(item => (
                       <div key={getItemId(item)} className="preview-item">
@@ -371,17 +372,17 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
                     {/* TRUNCATED ITEMS - Show if more than 3 items */}
                     {cartItems.length > 3 && (
                       <div className="preview-more">
-                        +{cartItems.length - 3} more items...
-                      </div>
+                        +{cartItems.length - 3} more fragrances...
+                      </div>  /* Updated text */
                     )}
                   </div>
                 </div>
 
                 {/* CHECKOUT NOTICE - Important information */}
                 <div className="checkout-notice">
-                  <p>Your order will be processed immediately</p>
-                  <p>You will receive an order confirmation</p>
-                  <p>Items will be added to your order history</p>
+                  <p>Your fragrance order will be processed immediately</p>  {/* Updated notice */}
+                  <p>You will receive an order confirmation from I Smell Shop</p>  {/* Updated notice */}
+                  <p>Fragrances will be added to your order history</p>  {/* Updated notice */}
                 </div>
 
                 {/* CONFIRMATION ACTIONS - Final decision buttons */}
@@ -391,8 +392,8 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
                     onClick={closeModals}  // Cancel checkout
                     disabled={checkoutLoading}  // Disable during processing
                   >
-                    Cancel
-                  </button>
+                    Continue Shopping
+                  </button>  {/* Updated button text */}
                   <button 
                     className="management-btn btn-success" 
                     onClick={handleCheckout}  // Confirm purchase
@@ -401,10 +402,10 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
                     {checkoutLoading ? (
                       <span className="loading-content">
                         <div className="loading-spinner-small"></div>
-                        Processing Order...  {/* Loading state */}
+                        Processing Your Order...  {/* Loading state */}
                       </span>
                     ) : (
-                      'Confirm Purchase' 
+                      'Confirm Fragrance Purchase'  /* Updated button text */
                     )}
                   </button>
                 </div>
@@ -419,18 +420,18 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
         <div className="modal-overlay">
           <div className="modal-content">
             <div className="modal-header">
-              <h3>Remove Item</h3>  {/* Modal title */}
+              <h3>Remove Fragrance</h3>  {/* Updated modal title */}
               <button className="modal-close" onClick={closeModals}>Close</button>  {/* Close button */}
             </div>
             
             <div className="modal-body">
               <div className="confirmation-content">
                 <h4>Remove from Cart?</h4>  {/* Confirmation question */}
-                <p>Are you sure you want to remove <strong>"{getProductName(selectedItem)}"</strong> from your cart?</p>  {/* Item reference */}
+                <p>Are you sure you want to remove <strong>"{getProductName(selectedItem)}"</strong> from your fragrance cart?</p>  {/* Updated item reference */}
                 
                 {/* ITEM PREVIEW - Show item details */}
                 <div className="item-preview">
-                  <p><strong>Quantity:</strong> {getProductQuantity(selectedItem)}</p>  {/* Item quantity */}
+                  <p><strong>Quantity:</strong> {getProductQuantity(selectedItem)} bottles</p>  {/* Updated quantity label */}
                   <p><strong>Price:</strong> {getProductPrice(selectedItem)} DH each</p>  {/* Item price */}
                   <p><strong>Total:</strong> {(getProductQuantity(selectedItem) * getProductPrice(selectedItem)).toFixed(2)} DH</p>  {/* Item total */}
                 </div>
@@ -441,14 +442,14 @@ const ShoppingCart = ({ onViewChange, showNotification }) => {
                     className="management-btn btn-secondary" 
                     onClick={closeModals}  // Keep item in cart
                   >
-                    Keep Item
+                    Keep in Cart
                   </button>
                   <button 
                     className="management-btn btn-danger" 
                     onClick={() => handleRemoveItem(getItemId(selectedItem))}  // Remove item
                   >
-                    Remove from Cart
-                  </button>
+                    Remove Fragrance
+                  </button>  {/* Updated button text */}
                 </div>
               </div>
             </div>
