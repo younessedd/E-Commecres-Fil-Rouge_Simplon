@@ -25,8 +25,16 @@ class ProductController extends Controller
 
         $data = $request->validated();
 
+        // 🔥 تأكد من رفع الصورة بشكل صحيح
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('products', 'public');
+            $file = $request->file('image');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            
+            // احفظ في storage
+            $path = $file->storeAs('products', $filename, 'public');
+            $data['image'] = $path; // ستكون 'products/filename.jpg'
+            
+            \Log::info('Image uploaded', ['path' => $path]);
         }
 
         if (empty($data['slug'])) {
@@ -34,11 +42,16 @@ class ProductController extends Controller
         }
 
         $product = Product::create($data);
+        
+        // 🔥 تأكد من تحميل العلاقات والعناصر المحسوبة
+        $product->load('category');
+        
         return response()->json($this->formatProductResponse($product), 201);
     }
 
     public function show(Product $product)
     {
+        $product->load('category');
         return response()->json($this->formatProductResponse($product), 200);
     }
 
@@ -50,10 +63,15 @@ class ProductController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('image')) {
+            // احذف الصورة القديمة
             if ($product->image && Storage::disk('public')->exists($product->image)) {
                 Storage::disk('public')->delete($product->image);
             }
-            $data['image'] = $request->file('image')->store('products', 'public');
+            
+            $file = $request->file('image');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('products', $filename, 'public');
+            $data['image'] = $path;
         }
 
         if (empty($data['slug'])) {
@@ -61,6 +79,8 @@ class ProductController extends Controller
         }
 
         $product->update($data);
+        $product->load('category');
+        
         return response()->json($this->formatProductResponse($product), 200);
     }
 
@@ -89,44 +109,7 @@ class ProductController extends Controller
         return response()->json($products, 200);
     }
 
-    public function debugImages()
-    {
-        $products = Product::all();
-        $debugInfo = [];
-        
-        foreach ($products as $product) {
-            $filename = $product->image ? basename($product->image) : null;
-            $debugInfo[] = [
-                'product_id' => $product->id,
-                'product_name' => $product->name,
-                'image_in_db' => $product->image,
-                'filename' => $filename,
-                'storage_exists' => $filename ? file_exists(storage_path('app/public/products/' . $filename)) : false,
-                'public_exists' => $filename ? file_exists(public_path('storage/products/' . $filename)) : false,
-                'generated_url' => $this->generateImageUrl($product->image),
-                'direct_test_url' => $filename ? url("storage/products/{$filename}") : null,
-            ];
-        }
-        
-        return response()->json($debugInfo);
-    }
-
-    public function checkStorage()
-    {
-        $storagePath = storage_path('app/public/products/');
-        $publicPath = public_path('storage/products/');
-        
-        return response()->json([
-            'storage_path' => $storagePath,
-            'storage_exists' => file_exists($storagePath),
-            'public_path' => $publicPath,
-            'public_exists' => file_exists($publicPath),
-            'storage_files' => file_exists($storagePath) ? scandir($storagePath) : [],
-            'public_files' => file_exists($publicPath) ? scandir($publicPath) : [],
-            'storage_link' => file_exists(public_path('storage')) ? 'Exists' : 'Missing'
-        ]);
-    }
-
+    // 🔥 الدالة المصححة بالكامل
     private function formatProductResponse($product)
     {
         return [
@@ -139,16 +122,9 @@ class ProductController extends Controller
             'category_id' => $product->category_id,
             'category' => $product->category,
             'image' => $product->image,
-            'image_url' => $this->generateImageUrl($product->image),
+            'image_url' => $product->image_url, // 🔥 استخدم accessor من Model
             'created_at' => $product->created_at,
             'updated_at' => $product->updated_at,
         ];
-    }
-
-    private function generateImageUrl($imagePath)
-    {
-        if (!$imagePath) return 'https://via.placeholder.com/300x300/CCCCCC/FFFFFF?text=No+Image';
-        $filename = basename($imagePath);
-        return url("storage/products/{$filename}");
     }
 }

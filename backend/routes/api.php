@@ -22,12 +22,11 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/search', [ProductController::class, 'search']);
 Route::get('/products/{product}', [ProductController::class, 'show']);
-Route::get('/debug/images', [ProductController::class, 'debugImages']);
-Route::get('/check-storage', [ProductController::class, 'checkStorage']);
 
 // ========================
-// 📤 FILE UPLOAD ROUTES
+// 📤 FILE UPLOAD ROUTES - 🔥 التصحيح هنا
 // ========================
+// تأكد من هذا الجزء في ملف routes/api.php
 Route::post('/upload/image', function (Request $request) {
     $request->validate([
         'image' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048'
@@ -39,7 +38,7 @@ Route::post('/upload/image', function (Request $request) {
         'success' => true,
         'path' => $path,
         'filename' => basename($path),
-        'url' => url("storage/products/" . basename($path))
+        'url' => asset('storage/' . $path) // 🔥 التصحيح هنا
     ]);
 });
 
@@ -54,7 +53,7 @@ Route::post('/upload/multiple', function (Request $request) {
         $uploadedFiles[] = [
             'path' => $path,
             'filename' => basename($path),
-            'url' => url("storage/products/" . basename($path))
+            'url' => asset('storage/' . $path) // 🔥 التصحيح هنا أيضاً
         ];
     }
 

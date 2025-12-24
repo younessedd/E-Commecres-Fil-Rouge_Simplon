@@ -1,7 +1,7 @@
-// API CONFIGURATION - Base URL for all API endpoints
-export const API_BASE_URL = process.env.REACT_APP_API_URL;
+// API CONFIGURATION
+export const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
 
-// CORE REQUEST HANDLER - Main function for all API calls
+// CORE REQUEST HANDLER
 export const makeRequest = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token');
   
@@ -65,7 +65,7 @@ export const makeRequest = async (endpoint, options = {}) => {
   }
 };
 
-// FORM DATA REQUEST HANDLER - Specialized for file uploads
+// FORM DATA REQUEST HANDLER
 export const makeFormDataRequest = async (endpoint, formData, method = 'POST') => {
   const token = localStorage.getItem('token');
   
@@ -121,7 +121,7 @@ export const makeFormDataRequest = async (endpoint, formData, method = 'POST') =
   }
 };
 
-// IMAGE URL HELPER - Generate product image URLs
+// IMAGE URL HELPER - الكود المصحح
 export const getProductImageUrl = (imagePath) => {
   if (!imagePath) {
     return 'https://media.istockphoto.com/id/1071359118/vector/missing-image-vector-illustration-no-image-available-vector-concept.jpg?s=612x612&w=0&k=20&c=ukQmxO3tnUxz6mk7akh7aRCw_nyO9mmuvabs9FDPpfw=';
@@ -131,38 +131,35 @@ export const getProductImageUrl = (imagePath) => {
     return imagePath;
   }
   
-  const baseUrl = process.env.REACT_APP_API_BASE_URL;
+  const baseUrl = process.env.REACT_APP_API_URL 
+    ? process.env.REACT_APP_API_URL.replace('/api', '') 
+    : 'http://localhost:8000';
   
-  if (imagePath.startsWith('storage/')) {
-    return `${baseUrl}/${imagePath}`;
-  } else if (imagePath.startsWith('public/')) {
-    const cleanPath = imagePath.replace('public/', 'storage/');
-    return `${baseUrl}/${cleanPath}`;
-  } else {
+  if (imagePath.startsWith('products/')) {
     return `${baseUrl}/storage/${imagePath}`;
   }
+  
+  if (imagePath.includes('.jpg') || imagePath.includes('.png') || imagePath.includes('.jpeg') || imagePath.includes('.webp')) {
+    return `${baseUrl}/storage/products/${imagePath}`;
+  }
+  
+  return 'https://media.istockphoto.com/id/1071359118/vector/missing-image-vector-illustration-no-image-available-vector-concept.jpg?s=612x612&w=0&k=20&c=ukQmxO3tnUxz6mk7akh7aRCw_nyO9mmuvabs9FDPpfw=';
 };
 
-// AUTHENTICATION UTILITIES - User session management
-export const isAuthenticated = () => {
-  return localStorage.getItem('token') !== null;
-};
-
+// باقي الدوال
+export const isAuthenticated = () => localStorage.getItem('token') !== null;
 export const getCurrentUser = () => {
   const user = localStorage.getItem('user');
   return user ? JSON.parse(user) : null;
 };
-
 export const setAuth = (user, token) => {
   localStorage.setItem('user', JSON.stringify(user));
   localStorage.setItem('token', token);
 };
-
 export const removeAuth = () => {
   localStorage.removeItem('user');
   localStorage.removeItem('token');
 };
-
 export const isAdmin = () => {
   const user = getCurrentUser();
   return user && user.role === 'admin';

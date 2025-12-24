@@ -38,8 +38,23 @@ export const productsAPI = {
   // - productData: FormData object containing product info and image file
   // Method: Uses FormData for file upload support
   // Returns: Promise with created product data
-  create: (productData) => 
-    makeFormDataRequest('/products', productData, 'POST'),
+  create: (productData) => {
+    // تأكد أن productData هو FormData
+    if (productData instanceof FormData) {
+      return makeFormDataRequest('/products', productData, 'POST');
+    } else {
+      // إذا لم يكن FormData، حوله إلى FormData
+      const formData = new FormData();
+      Object.keys(productData).forEach(key => {
+        if (key === 'image' && productData[key] instanceof File) {
+          formData.append('image', productData[key]);
+        } else {
+          formData.append(key, productData[key]);
+        }
+      });
+      return makeFormDataRequest('/products', formData, 'POST');
+    }
+  },
   
   // UPDATE PRODUCT - Modify existing product information
   // Parameters:
