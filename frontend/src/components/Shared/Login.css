@@ -49,9 +49,21 @@
   margin-bottom: 2rem;
   text-align: center;
   font-size: 1rem;
+  transition: all 0.2s ease;
 }
 
-/* ===== ERROR MESSAGE ===== */
+/* Subtitle error state (shows inline notification) */
+.login-subtitle.login-subtitle-error {
+  background: #FEE2E2;
+  border: 1px solid #FECACA;
+  color: #DC2626;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+}
+
+/* ===== ERROR MESSAGE (legacy; no longer used) ===== */
 .login-error {
   background: #FEE2E2;
   border: 1px solid #FECACA;
@@ -139,6 +151,17 @@
 .password-toggle:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ===== FIELD ERROR (inline) ===== */
+.field-error {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #dc2626;
+  background: #fff7f7;
+  border: 1px solid #fca5a5;
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
 }
 
 /* ===== LOGIN BUTTON ===== */

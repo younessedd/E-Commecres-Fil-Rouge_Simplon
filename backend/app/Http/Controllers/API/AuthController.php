@@ -68,9 +68,15 @@ class AuthController extends Controller
         // Find user by email
         $user = User::where('email', $validated['email'])->first();
         
-        // Check if user exists and password is correct
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+        // Specific error messages for login failures
+        if (!$user) {
+            // Email not registered
+            return response()->json(['message' => 'Email not registered'], 404);
+        }
+
+        if (!Hash::check($validated['password'], $user->password)) {
+            // Password incorrect
+            return response()->json(['message' => 'Incorrect password'], 401);
         }
 
         // Generate new API token

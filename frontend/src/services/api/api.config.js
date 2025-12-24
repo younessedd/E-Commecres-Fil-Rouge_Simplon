@@ -42,17 +42,20 @@ export const makeRequest = async (endpoint, options = {}) => {
     }
 
     if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('NOT_FOUND: The requested resource was not found');
+      // Prefer server-provided message when available (better UX for login and other errors)
+      if (data && data.message) {
+        throw new Error(data.message);
+      }
+
+      if (response.status === 422) {
+        const errors = data && data.errors ? Object.values(data.errors).flat().join(', ') : `Validation failed (${response.status})`;
+        throw new Error(`VALIDATION_ERROR: ${errors}`);
       } else if (response.status === 401) {
         throw new Error('AUTH_REQUIRED: Please log in to access this resource');
       } else if (response.status === 403) {
         throw new Error('FORBIDDEN: You do not have permission to access this resource');
-      } else if (response.status === 422) {
-        const errors = data.errors ? Object.values(data.errors).flat().join(', ') : data.message;
-        throw new Error(`VALIDATION_ERROR: ${errors}`);
-      } else if (data && data.message) {
-        throw new Error(data.message);
+      } else if (response.status === 404) {
+        throw new Error('NOT_FOUND: The requested resource was not found');
       } else {
         throw new Error(`Server error: ${response.status} ${response.statusText}`);
       }
@@ -100,15 +103,18 @@ export const makeFormDataRequest = async (endpoint, formData, method = 'POST') =
     }
 
     if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('NOT_FOUND: The requested resource was not found');
+      // Prefer server-provided message when available (better UX for login and other errors)
+      if (data && data.message) {
+        throw new Error(data.message);
+      }
+
+      if (response.status === 422) {
+        const errors = data && data.errors ? Object.values(data.errors).flat().join(', ') : `Validation failed (${response.status})`;
+        throw new Error(`VALIDATION_ERROR: ${errors}`);
       } else if (response.status === 401 || response.status === 403) {
         throw new Error('AUTH_REQUIRED: Please log in to access this resource');
-      } else if (response.status === 422) {
-        const errors = data.errors ? Object.values(data.errors).flat().join(', ') : data.message;
-        throw new Error(`VALIDATION_ERROR: ${errors}`);
-      } else if (data && data.message) {
-        throw new Error(data.message);
+      } else if (response.status === 404) {
+        throw new Error('NOT_FOUND: The requested resource was not found');
       } else {
         throw new Error(`Error: ${response.status} ${response.statusText}`);
       }

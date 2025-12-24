@@ -14,6 +14,7 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
   });
   const [loading, setLoading] = useState(false);      // Loading state during API call
   const [error, setError] = useState('');             // Error message display
+  const [fieldErrors, setFieldErrors] = useState({}); // Field-specific errors (email, password)
   const [showPassword, setShowPassword] = useState(false);  // Password visibility toggle
 
   // INPUT CHANGE HANDLER - Update form data on user input
@@ -22,7 +23,8 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
       ...formData,
       [e.target.name]: e.target.value  // Dynamic property update
     });
-    setError('');  // Clear errors when user starts typing
+    setError('');  // Clear general errors when user starts typing
+    setFieldErrors(prev => ({ ...prev, [e.target.name]: '' })); // Clear field error for this input
   };
 
   // PASSWORD VISIBILITY TOGGLE - Show/hide password text
@@ -45,7 +47,52 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
       
     } catch (err) {
       // ERROR HANDLER - Display appropriate error message
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      const apiResponse = err.response?.data;
+      const validationErrors = apiResponse?.errors;
+
+      // Reset field errors
+      setFieldErrors({});
+
+      if (validationErrors) {
+        // Map validation errors to fieldErrors state
+        const mapped = Object.keys(validationErrors).reduce((acc, key) => {
+          acc[key] = validationErrors[key][0];
+          return acc;
+        }, {});
+
+        setFieldErrors(mapped);
+        setError(mapped[Object.keys(mapped)[0]] || 'Please fix the highlighted fields');
+      } else if (apiResponse?.message) {
+        // Specific server messages - normalize and map to friendly messages
+        let msg = apiResponse.message || '';
+
+        // Normalize common prefixes (e.g., "AUTH_REQUIRED: ...", "NOT_FOUND: ...", "VALIDATION_ERROR: ...")
+        msg = msg.replace(/^\s*(AUTH_REQUIRED|NOT_FOUND|VALIDATION_ERROR)\s*[:\-]?\s*/i, '');
+
+        // Map unauthenticated/authorization messages to a friendly message
+        if (/unauthenticated|auth_required|please log in to access/i.test(apiResponse.message)) {
+          msg = 'Please log in to access this resource.';
+        }
+
+        msg = msg.trim();
+
+        // Map to specific field errors when message references a field
+        if (/email/i.test(msg)) {
+          setFieldErrors({ email: msg });
+          setError(msg);
+        } else if (/password/i.test(msg)) {
+          setFieldErrors({ password: msg });
+          setError(msg);
+        } else {
+          // Generic server message shown in subtitle
+          setError(msg || 'Login failed. Please try again.');
+        }
+      } else if (err.message) {
+        // Network or unexpected error
+        setError(err.message);
+      } else {
+        setError('Login failed. Please try again.');
+      }
     } finally {
       // CLEANUP - Reset loading state regardless of outcome
       setLoading(false);
@@ -59,10 +106,8 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
         
         {/* HEADER SECTION - Welcome message */}
         <h2 className="login-title">Welcome to I Smell Shop</h2>
-        <p className="login-subtitle">Sign in to your account</p>
-        
-        {/* ERROR DISPLAY - Show validation/API errors */}
-        {error && <div className="login-error">{error}</div>}
+        {/* Subtitle shows instructions or inline error messages when login fails */}
+        <p className={`login-subtitle ${error ? 'login-subtitle-error' : ''}`} aria-live="polite">{error || 'Sign in to your account'}</p>
         
         {/* LOGIN FORM - Email and password inputs */}
         <form onSubmit={handleSubmit} className="login-form">
@@ -80,6 +125,7 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
               className="form-input"
               disabled={loading}  // Disable during loading
             />
+            {fieldErrors.email && <div className="field-error">{fieldErrors.email}</div>}
           </div>
           
           {/* PASSWORD INPUT GROUP - With visibility toggle */}
@@ -106,6 +152,7 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
                 {showPassword ? "👁️" : "👁️‍🗨️"}
               </button>
             </div>
+            {fieldErrors.password && <div className="field-error">{fieldErrors.password}</div>}
           </div>
           
           {/* SUBMIT BUTTON - Login action */}
